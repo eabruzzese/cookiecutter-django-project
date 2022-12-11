@@ -12,21 +12,28 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 
+import environ
+
+env = environ.Env()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Read the .env file (if it exists)
+env.read_env(BASE_DIR / ".env")
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-nqhcip(&lbfj=f5xi3t*(e&zjj-*kzco7c-1+t&lzaaqeh2hxv"
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DEBUG", default=False)
 
-ALLOWED_HOSTS: list[str] = []
-
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
+USE_X_FORWARDED_HOST = env("USE_X_FORWARDED_HOST", default=True)
 
 # Application definition
 
@@ -76,14 +83,28 @@ WSGI_APPLICATION = "intranet.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+DATABASE_URL = env.url("DATABASE_URL")
+
+# Special handling to support project-relative SQLite paths.
+# See: https://github.com/joke2k/django-environ/issues/187
+if DATABASE_URL.scheme == "sqlite" and DATABASE_URL.netloc:
+    DATABASE_FILE_PATH = str((BASE_DIR / ".." / DATABASE_URL.netloc).resolve())
+    DATABASE_URL = DATABASE_URL._replace(netloc="", path=f"/{DATABASE_FILE_PATH}")
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    # Parse the DATABASE_URL from the environment and create a database
+    # configuration from it.
+    "default": env.db_url_config(DATABASE_URL)
 }
 
+# Cache
+# https://docs.djangoproject.com/en/4.1/ref/settings/#caches
+CACHE_URL = env.url("CACHE_URL")
+CACHES = {
+    # Parse the CACHE_URL from the environment and create a cache configuration
+    # from it.
+    "default": env.cache_url_config(CACHE_URL),
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
