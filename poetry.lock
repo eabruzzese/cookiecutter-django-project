@@ -506,6 +506,17 @@ docs = ["sphinx"]
 test = ["celery", "pytest", "pytest-cov", "pytest-django", "redis"]
 
 [[package]]
+name = "django-htmx"
+version = "1.13.0"
+description = "Extensions for using Django with htmx."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+Django = ">=3.2"
+
+[[package]]
 name = "django-otp"
 version = "1.1.4"
 description = "A pluggable framework for adding two-factor authentication to Django using one-time passwords."
@@ -1830,7 +1841,7 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.11"
-content-hash = "ef5065cf7881809e7cdea3099352ceb62c9e5f394c173c5e52af0acd037c9e7e"
+content-hash = "70e9cfca686d4db5157208450e0c53410161402da3398f78be86091ff85471fe"
 
 [metadata.files]
 alabaster = [
@@ -2147,6 +2158,10 @@ django-extensions = [
 django-health-check = [
     {file = "django-health-check-3.17.0.tar.gz", hash = "sha256:d1b8671e79d1de6e3dd1a9c69566222b0bfcfacca8b90511a4407b2d0d3d2778"},
     {file = "django_health_check-3.17.0-py2.py3-none-any.whl", hash = "sha256:20dc5ccb516a4e7163593fd4026f0a7531e3027b47d23ebe3bd9dbc99ac4354c"},
+]
+django-htmx = [
+    {file = "django-htmx-1.13.0.tar.gz", hash = "sha256:848c3e195b8757656626c8a099f9be59c6d30f468f1d54e69f0f2a48f0a14928"},
+    {file = "django_htmx-1.13.0-py3-none-any.whl", hash = "sha256:781a59376d769aa28302619e73d37d481a125ab155d9fdd7fb17f10e7d25f352"},
 ]
 django-otp = [
     {file = "django-otp-1.1.4.tar.gz", hash = "sha256:0adead4aa5e34618fc4dba8ea15c71f6b3d520a6197a02a2edd6fa8b5140295c"},

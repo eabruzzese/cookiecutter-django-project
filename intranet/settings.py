@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     "django_extensions",
     "django_celery_results",
     "django_celery_beat",
+    "django_htmx",
     "health_check",
     "health_check.db",
     "health_check.cache",
@@ -85,6 +86,7 @@ MIDDLEWARE = [
     "intranet.accounts.middleware.TimeZoneMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
 ]
 
 ROOT_URLCONF = "intranet.urls"
