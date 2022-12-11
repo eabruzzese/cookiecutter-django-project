@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.sites",
     "django.contrib.staticfiles",
+    # First-party apps
+    "intranet.accounts",
     # Third-party apps
     "allauth",
     "allauth.account",
@@ -67,8 +69,6 @@ INSTALLED_APPS = [
     "health_check.contrib.celery",
     "health_check.contrib.psutil",
     "waffle",
-    # First-party apps
-    "intranet.accounts",
 ]
 
 MIDDLEWARE = [
@@ -91,7 +91,9 @@ ROOT_URLCONF = "intranet.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [
+            BASE_DIR / "intranet" / "templates",
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
