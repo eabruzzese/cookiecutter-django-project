@@ -74,20 +74,122 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    ##
+    # Near the top of the list if you’re going to turn on the SSL redirect as
+    # that avoids running through a bunch of other unnecessary middleware.
+    #
+    # See: https://docs.djangoproject.com/en/4.1/ref/middleware/#middleware-ordering
     "django.middleware.security.SecurityMiddleware",
+    ##
+    # As early as possible, especially before any middleware that can produce
+    # responses (e.g. common or whitenoise).
+    #
+    # See: https://github.com/adamchainz/django-cors-headers#setup
     "corsheaders.middleware.CorsMiddleware",
-    "waffle.middleware.WaffleMiddleware",
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
+    ##
+    # As early as possible, but after the SecurityMiddleware.
+    #
+    # See: https://whitenoise.evans.io/en/latest/#quickstart-for-django-apps
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    ##
+    # Before those that modify the Vary header (SessionMiddleware, GZipMiddleware, LocaleMiddleware).
+    #
+    # See: https://docs.djangoproject.com/en/4.1/ref/middleware/#middleware-ordering
+    "django.middleware.cache.UpdateCacheMiddleware",
+    ##
+    # Before any middleware that may change or use the response body.
+    #
+    # After UpdateCacheMiddleware: Modifies Vary header.
+    #
+    # See: https://docs.djangoproject.com/en/4.1/ref/middleware/#middleware-ordering
+    "django.middleware.gzip.GZipMiddleware",
+    ##
+    # The django-debug-toolbar requires that its middleware be placed as early
+    # as possible in the list, but after any middleware that encodes the
+    # response (e.g., gzip).
+    #
+    # See: https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#add-the-middleware
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
+    ##
+    # Before any middleware that may raise an exception to trigger an error view (such as PermissionDenied) if you’re using CSRF_USE_SESSIONS.
+    #
+    # After UpdateCacheMiddleware: Modifies Vary header.
+    #
+    # See: https://docs.djangoproject.com/en/4.1/ref/middleware/#middleware-ordering
     "django.contrib.sessions.middleware.SessionMiddleware",
+    ##
+    # Before any middleware that may change the response (it sets the ETag header).
+    #
+    # After GZipMiddleware so it won’t calculate an ETag header on gzipped contents.
+    #
+    # See: https://docs.djangoproject.com/en/4.1/ref/middleware/#middleware-ordering
+    "django.middleware.http.ConditionalGetMiddleware",
+    ##
+    # One of the topmost, after SessionMiddleware (uses session data) and UpdateCacheMiddleware (modifies Vary header).
+    #
+    # See: https://docs.djangoproject.com/en/4.1/ref/middleware/#middleware-ordering
+    "django.middleware.locale.LocaleMiddleware",
+    ##
+    # Before any middleware that may change the response (it sets the Content-Length header). A middleware that appears before CommonMiddleware and changes the response must reset Content-Length.
+    #
+    # Close to the top: it redirects when APPEND_SLASH or PREPEND_WWW are set to True.
+    #
+    # After SessionMiddleware if you’re using CSRF_USE_SESSIONS.
+    #
+    # See: https://docs.djangoproject.com/en/4.1/ref/middleware/#middleware-ordering
     "django.middleware.common.CommonMiddleware",
+    ##
+    # Before any view middleware that assumes that CSRF attacks have been dealt
+    # with.
+    #
+    # Before RemoteUserMiddleware, or any other authentication middleware that
+    # may perform a login, and hence rotate the CSRF token, before calling down
+    # the middleware chain.
+    #
+    # After SessionMiddleware if you’re using CSRF_USE_SESSIONS.
+    #
+    # See: https://docs.djangoproject.com/en/4.1/ref/middleware/#middleware-ordering
     "django.middleware.csrf.CsrfViewMiddleware",
+    ##
+    # After SessionMiddleware: uses session storage.
+    #
+    # See: https://docs.djangoproject.com/en/4.1/ref/middleware/#middleware-ordering
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "intranet.accounts.middleware.TimeZoneMiddleware",
+    ##
+    # After SessionMiddleware: can use session-based storage.
+    #
+    # See: https://docs.djangoproject.com/en/4.1/ref/middleware/#middleware-ordering
     "django.contrib.messages.middleware.MessageMiddleware",
+    ##
+    # After any middleware that modifies the Vary header: that header is used to
+    # pick a value for the cache hash-key.
+    #
+    # See: https://docs.djangoproject.com/en/4.1/ref/middleware/#middleware-ordering
+    "django.middleware.cache.FetchFromCacheMiddleware",
+    ##
+    # Adds the X-Frame-Options header. No placement constraints.
+    #
+    # See: https://docs.djangoproject.com/en/4.1/ref/clickjacking/#how-to-use-it
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    ##
+    # Adds headers for HTMX.
+    #
+    # See: https://django-htmx.readthedocs.io/en/latest/middleware.html#django_htmx.middleware.HtmxMiddleware
     "django_htmx.middleware.HtmxMiddleware",
+    ##
+    # Manages django-waffle's rollout features.
+    #
+    # See: https://waffle.readthedocs.io/en/stable/starting/installation.html#settings
+    "waffle.middleware.WaffleMiddleware",
+    ##
+    # Activates a user's time zone based on their preferences.
+    #
+    # See: intranet.accounts.middleware.TimeZoneMiddleware
+    "intranet.accounts.middleware.TimeZoneMiddleware",
 ]
+
+# Disable the cache middleware when DEBUG is enabled.
+CACHE_MIDDLEWARE_SECONDS = 0 if DEBUG else env("CACHE_MIDDLEWARE_SECONDS", default=600)
 
 ROOT_URLCONF = "intranet.urls"
 
