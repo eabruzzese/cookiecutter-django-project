@@ -80,6 +80,7 @@ django-timezone-field = "^5.0"
 ipython = "*"
 python = "^3.11"
 tzdata = "^2022.7"
+whitenoise = {extras = ["brotli"], version = "^6.2.0"}
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "*"
