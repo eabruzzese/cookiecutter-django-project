@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # Third-party apps
+    "constance",
+    "constance.backends.database",
     "debug_toolbar",
     "django_extensions",
     "django_celery_results",
@@ -185,3 +187,10 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 # Allow the debug toolbar to be toggled with an environment variable.
 DEBUG_TOOLBAR_ENABLED = env("DEBUG_TOOLBAR_ENABLED", default=DEBUG)
 DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": lambda _: DEBUG_TOOLBAR_ENABLED}
+
+# Constance
+# https://django-constance.readthedocs.io/en/latest/
+CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
+CONSTANCE_DATABASE_CACHE_BACKEND = "default"
+CONSTANCE_CONFIG: dict[str, tuple] = {}
+CONSTANCE_CONFIG_FIELDSETS: dict[str, tuple] = {}
