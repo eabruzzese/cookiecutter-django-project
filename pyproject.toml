@@ -76,8 +76,10 @@ version = "0.1.0"
 [tool.poetry.dependencies]
 django = "^4"
 django-extensions = "*"
+django-timezone-field = "^5.0"
 ipython = "*"
 python = "^3.11"
+tzdata = "^2022.7"
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "*"
