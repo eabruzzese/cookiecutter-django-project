@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # Third-party apps
+    "debug_toolbar",
     "django_extensions",
     "django_celery_results",
     "django_celery_beat",
@@ -63,6 +64,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "waffle.middleware.WaffleMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -179,3 +181,7 @@ CELERY_WORKER_CONCURRENCY = env("CELERY_WORKER_CONCURRENCY", default=12)
 CELERY_WORKER_MAX_TASKS_PER_CHILD = env("CELERY_WORKER_MAX_TASKS_PER_CHILD", default=12)
 CELERY_WORKER_MAX_MEMORY_PER_CHILD = env("CELERY_WORKER_MAX_MEMORY_PER_CHILD", default=(128 * 1024))
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+# Allow the debug toolbar to be toggled with an environment variable.
+DEBUG_TOOLBAR_ENABLED = env("DEBUG_TOOLBAR_ENABLED", default=DEBUG)
+DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": lambda _: DEBUG_TOOLBAR_ENABLED}

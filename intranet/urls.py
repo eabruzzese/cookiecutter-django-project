@@ -20,4 +20,5 @@ from django.urls import include, path, re_path
 urlpatterns = [
     path("admin/", admin.site.urls),
     re_path(r"healthcheck/?", include("health_check.urls")),
+    path("__debug__/", include("debug_toolbar.urls")),
 ]
