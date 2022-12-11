@@ -1,0 +1,16 @@
+{% extends "account/base.html" %}
+
+{% load static %}
+{% load i18n %}
+
+{% block head_title %}{% translate "Signup is closed" %}{% endblock head_title %}
+{% block title %}{% translate "Signup is closed" %}{% endblock title %}
+{% block subtitle %}
+  If you already have an account, <a href="{% url 'account_login' %}" class="font-medium text-indigo-600 hover:text-indigo-500"> {% translate "log in here" %} </a>
+{% endblock subtitle %}
+
+{% block content %}
+  <p class="mt-2 text-sm text-gray-600">
+    {% translate "We're currently closed to new signups." %}
+  </p>
+{% endblock %}

@@ -43,8 +43,15 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "django.contrib.sites",
     "django.contrib.staticfiles",
     # Third-party apps
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "django_otp",
+    "django_otp.plugins.otp_totp",
+    "django_otp.plugins.otp_static",
     "constance",
     "constance.backends.database",
     "debug_toolbar",
@@ -168,6 +175,17 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "accounts.User"
 
+SITE_ID = 1
+
+SILENCED_SYSTEM_CHECKS = env.list("SILENCED_SYSTEM_CHECKS", default=[])
+
+LOGOUT_REDIRECT_URL = "account_login"
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
 # Celery
 # https://docs.celeryq.dev/en/stable/userguide/configuration.html
 CELERY_BROKER_URL = env.url("CELERY_BROKER_URL").geturl()
@@ -192,5 +210,38 @@ DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": lambda _: DEBUG_TOOLBAR_ENABLED
 # https://django-constance.readthedocs.io/en/latest/
 CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
 CONSTANCE_DATABASE_CACHE_BACKEND = "default"
-CONSTANCE_CONFIG: dict[str, tuple] = {}
+CONSTANCE_CONFIG: dict[str, tuple] = {
+    "ACCOUNTS_REGISTRATION_OPEN": (
+        env("ACCOUNTS_REGISTRATION_OPEN", default=False),
+        "Allow registration of new user accounts",
+        bool,
+    ),
+}
 CONSTANCE_CONFIG_FIELDSETS: dict[str, tuple] = {}
+
+# Allauth
+# https://django-allauth.readthedocs.io/en/latest/configuration.html
+ACCOUNT_ADAPTER = "intranet.accounts.adapters.AccountAdapter"
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = env("ACCOUNT_DEFAULT_HTTP_PROTOCOL", default="https")
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_PRESERVE_USERNAME_CASING = False
+ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
+ACCOUNT_LOGOUT_ON_GET = True
+ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+ACCOUNT_LOGIN_ON_PASSWORD_RESET = True
+
+# Use a custom signup form (for ReCAPTCHA integration).
+ACCOUNT_FORMS = {"signup": "intranet.accounts.forms.SignupForm"}
+ACCOUNT_LOGIN_ATTEMPTS_LIMIT = env("ACCOUNT_LOGIN_ATTEMPTS_LIMIT", default=5)
+ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = env("ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT", default=300)
+OTP_ADMIN_HIDE_SENSITIVE_DATA = True
+
+# ReCAPTCHA
+# https://github.com/torchbox/django-recaptcha
+RECAPTCHA_PUBLIC_KEY = env("RECAPTCHA_PUBLIC_KEY")
+RECAPTCHA_PRIVATE_KEY = env("RECAPTCHA_PRIVATE_KEY")
+RECAPTCHA_DOMAIN = env("RECAPTCHA_DOMAIN", default="www.google.com")
