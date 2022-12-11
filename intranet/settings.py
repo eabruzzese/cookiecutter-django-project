@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+from email.utils import parseaddr
 from pathlib import Path
 
 import environ
@@ -189,6 +190,23 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
+
+# Email
+# https://docs.djangoproject.com/en/4.1/topics/email/
+EMAIL_SUBJECT_PREFIX = env("EMAIL_SUBJECT_PREFIX", default="[Intranet] ")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="Intranet <no-reply@intranet.local>")
+SERVER_EMAIL = env("SERVER_EMAIL", default=DEFAULT_FROM_EMAIL)
+ADMINS = env.list(
+    "ADMINS",
+    cast=parseaddr,
+    default=[("Intranet Admins", "admins@intranet")],
+)
+MANAGERS = env.list(
+    "MANAGERS", cast=parseaddr, default=[("Inteanet Managers", "managers@intranet.local")]
+)
+
+# Parse the configured EMAIL_URL into proper Django settings.
+vars().update(env.email_url("EMAIL_URL"))
 
 # Celery
 # https://docs.celeryq.dev/en/stable/userguide/configuration.html
