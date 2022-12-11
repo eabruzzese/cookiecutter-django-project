@@ -274,3 +274,36 @@ RECAPTCHA_DOMAIN = env("RECAPTCHA_DOMAIN", default="www.google.com")
 # https://github.com/adamchainz/django-cors-headers
 CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
 CORS_ALLOW_ALL_ORIGINS = env.bool("CORS_ALLOW_ALL_ORIGINS", default=DEBUG)
+
+# Media storage (powered by django-storages and S3)
+# https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+AWS_DEFAULT_REGION = env("AWS_DEFAULT_REGION", default="us-west-2")
+
+# Advanced S3 settings used primarily for mocking S3 in local development.
+#
+#   * AWS_S3_ENDPOINT_URL allows us to point our S3 client to any S3-compatible
+#     endpoint (e.g., Minio or B2)
+#   * AWS_S3_CUSTOM_DOMAIN allows us to specify the domain (and optional path)
+#     that assets should be served from, if different from the AWS_S3_ENDPOINT_URL
+#     (e.g. a CDN, or the exposed port of a local service container like Minio)
+#   * AWS_S3_URL_PROTOCOL allows us to specify whether generated asset URLs
+#     should use the "http" or "https" protocol.
+#
+# For more information, see:
+#
+#   * https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
+#   * https://github.com/jschneier/django-storages/blob/master/storages/backends/s3boto3.py
+#
+AWS_S3_ENDPOINT_URL = env.url("AWS_S3_ENDPOINT_URL", default=None)
+AWS_S3_CUSTOM_DOMAIN = env("AWS_S3_CUSTOM_DOMAIN", default=None)
+AWS_S3_URL_PROTOCOL = env(
+    "AWS_S3_SECURE_URLS",
+    default=f"{AWS_S3_ENDPOINT_URL.scheme if AWS_S3_ENDPOINT_URL else 'https'}:",
+)
+# Convert the endpoint URL to its proper string representation once we've
+# finished using its parse results.
+AWS_S3_ENDPOINT_URL = AWS_S3_ENDPOINT_URL.geturl() if AWS_S3_ENDPOINT_URL else None

@@ -90,6 +90,7 @@ django-htmx = "^1.13.0"
 django-otp = "^1.1.4"
 django-recaptcha = "^3.0.0"
 django-redis = "^5.2.0"
+django-storages = {extras = ["boto3"], version = "^1.13.1"}
 django-timezone-field = "^5.0"
 django-waffle = "^3.0.0"
 gunicorn = {extras = ["setproctitle"], version = "^20.1.0"}
