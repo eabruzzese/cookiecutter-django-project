@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "django_otp.plugins.otp_static",
     "constance",
     "constance.backends.database",
+    "corsheaders",
     "debug_toolbar",
     "django_extensions",
     "django_celery_results",
@@ -72,6 +73,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "waffle.middleware.WaffleMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -245,3 +247,8 @@ OTP_ADMIN_HIDE_SENSITIVE_DATA = True
 RECAPTCHA_PUBLIC_KEY = env("RECAPTCHA_PUBLIC_KEY")
 RECAPTCHA_PRIVATE_KEY = env("RECAPTCHA_PRIVATE_KEY")
 RECAPTCHA_DOMAIN = env("RECAPTCHA_DOMAIN", default="www.google.com")
+
+# CORS configuration.
+# https://github.com/adamchainz/django-cors-headers
+CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
+CORS_ALLOW_ALL_ORIGINS = env.bool("CORS_ALLOW_ALL_ORIGINS", default=DEBUG)
