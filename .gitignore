@@ -161,3 +161,7 @@ cython_debug/
 
 # MacOS artifacts
 .DS_Store
+
+# Frontend artifacts
+node_modules
+intranet/static/theme

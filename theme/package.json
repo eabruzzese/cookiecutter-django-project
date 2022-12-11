@@ -1,0 +1,18 @@
+{
+  "license": "UNLICENSED",
+  "scripts": {
+    "prebuild": "yarn install",
+    "build": "tailwindcss --input=./src/css/theme.css --output=./dist/css/theme.css",
+    "optimize": "yarn run build --minify",
+    "watch": "yarn run build --watch"
+  },
+  "dependencies": {
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tailwindcss/forms": "^0.5.3",
+    "@tailwindcss/line-clamp": "^0.4.2",
+    "@tailwindcss/typography": "^0.5.8",
+    "autoprefixer": "^10.4.13",
+    "postcss": "^8.4.19",
+    "tailwindcss": "^3"
+  }
+}
