@@ -48,6 +48,14 @@ INSTALLED_APPS = [
     "django_extensions",
     "django_celery_results",
     "django_celery_beat",
+    "health_check",
+    "health_check.db",
+    "health_check.cache",
+    "health_check.storage",
+    "health_check.contrib.migrations",
+    "health_check.contrib.celery",
+    "health_check.contrib.psutil",
+    # First-party apps
     "intranet.accounts",
 ]
 
