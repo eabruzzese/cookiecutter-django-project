@@ -5,7 +5,7 @@ from timezone_field import TimeZoneField
 
 
 class User(AbstractUser):
-    """An intranet user."""
+    """A user account."""
 
     email = models.EmailField(
         verbose_name=_("email address"),

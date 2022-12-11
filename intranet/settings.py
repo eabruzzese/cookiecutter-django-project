@@ -202,7 +202,7 @@ ADMINS = env.list(
     default=[("Intranet Admins", "admins@intranet")],
 )
 MANAGERS = env.list(
-    "MANAGERS", cast=parseaddr, default=[("Inteanet Managers", "managers@intranet.local")]
+    "MANAGERS", cast=parseaddr, default=[("Intranet Managers", "managers@intranet.local")]
 )
 
 # Parse the configured EMAIL_URL into proper Django settings.

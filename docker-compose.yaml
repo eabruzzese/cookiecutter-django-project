@@ -1,0 +1,347 @@
+version: '3.8'
+
+volumes:
+  postgres:
+  mailhog:
+  minio:
+  rabbitmq:
+
+##
+# x-defaults
+#
+# Defaults that should apply to all services.
+#
+x-defaults: &defaults
+  init: true
+  restart: unless-stopped
+
+##
+# x-intranet
+#
+# Defaults that should apply to the intranet container and its derivatives
+# (migrations, workers, etc).
+#
+x-intranet: &intranet
+  <<: *defaults
+  image: gcr.io/rgblan/intranet:${IMAGE_TAG:-dev}
+  build:
+    context: .
+    target: ${BUILD_TARGET:-dev}
+  environment:
+    DATABASE_URL: postgres://postgres:development-only@postgres/postgres
+    CACHE_URL: redis://redis:6379
+    EMAIL_URL: smtp://mailhog:1025
+    CELERY_BROKER_URL: amqp://guest:guest@rabbitmq
+  env_file: .env
+  volumes:
+    - .:/app
+
+services:
+  ##
+  # migrations
+  #
+  # The migrations service is a run-once service that will run database migrations.
+  #
+  migrations:
+    <<: *intranet
+    command: ./manage.py migrate
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: on-failure
+
+  ##
+  # seed
+  #
+  # Seeds the database with fixture data.
+  #
+  seed:
+    <<: *intranet
+    command: |
+      sh -c "
+        ./manage.py createsuperuser --no-input
+        ./manage.py set_fake_passwords --password=development-only
+      "
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+    restart: on-failure
+
+  ##
+  # theme-build
+  #
+  # Builds the theme and watches for changes.
+  #
+  # The container mounts two volumes -- one for the theme, and one for the
+  # intranet -- and will output the compiled theme artifacts into the
+  # appropriate static directory in the intranet project.
+  #
+  # The intent is to mimic the `COPY --from=theme-build` directive in the `prod`
+  # stage of the Dockerfile, while also maintaining the ability to watch for
+  # changes and automatically recompile the theme.
+  #
+  theme-build:
+    <<: *defaults
+    build:
+      context: .
+      target: theme-build
+    # A TTY is necessary to prevent the watcher from prematurely stopping.
+    tty: true
+    # We set increased ulimits to prevent errors related to "too many open
+    # files" while watching for theme changes.
+    ulimits:
+      nofile:
+        soft: 4096
+        hard: 4096
+    environment:
+      DISABLE_PURGE: 1
+    command: watch --output=/build/intranet/static/theme/css/theme.css
+    volumes:
+      - .:/build
+
+  ##
+  # intranet
+  #
+  # The primary intranet app.
+  #
+  intranet:
+    <<: *intranet
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+      seed:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      mailhog:
+        condition: service_started
+      minio:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - 127.0.0.1:8000:8000
+
+  ##
+  # celery-worker
+  #
+  # A celery worker for processing background tasks.
+  #
+  celery-worker:
+    <<: *intranet
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 1G
+    command: watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery --app=intranet worker --uid=nobody --gid=nogroup --loglevel=INFO --task-events --without-gossip --without-heartbeat --without-mingle
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+    restart: on-failure
+
+  ##
+  # celery-beat
+  #
+  # A celery process for managing periodic tasks.
+  #
+  celery-beat:
+    <<: *intranet
+    command: watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery --app intranet beat --loglevel INFO
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+      celery-worker:
+        condition: service_started
+    restart: on-failure
+
+  ##
+  # postgres
+  #
+  # The postgres database behind the intranet app.
+  #
+  postgres:
+    <<: *defaults
+    image: postgres:14
+    environment:
+      PGUSER: postgres
+      POSTGRES_PASSWORD: development-only
+    volumes:
+      - postgres:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 1s
+      timeout: 5s
+      retries: 30
+
+  ##
+  # pgadmin4
+  #
+  # A pgadmin4 container for inspecting and managing the postgres database.
+  #
+  # Accessible on port 8054
+  #
+  pgadmin4:
+    <<: *defaults
+    image: dpage/pgadmin4:latest
+    entrypoint: |
+      /bin/sh -c "
+      # Generate a pgpass file for storing the development password.
+      printf '%s' 'postgres:5432:postgres:postgres:development-only' > /var/lib/pgadmin/pgpass.postgres
+      # Generate a servers.json file for storing the server configuration.
+      printf '%s' '{\"Servers\":{\"1\":{\"Name\":\"default\",\"Group\":\"Servers\",\"Port\":5432,\"Username\":\"postgres\",\"PassFile\":\"/var/lib/pgadmin/pgpass.postgres\",\"Host\":\"postgres\",\"SSLMode\":\"prefer\",\"MaintenanceDB\":\"postgres\"}}}' > /var/lib/pgadmin/servers.json
+      # Run the usual entrypoint.
+      exec /entrypoint.sh
+      "
+    depends_on:
+      mailhog:
+        condition: service_started
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@intranet.local
+      PGADMIN_DEFAULT_PASSWORD: development-only
+      PGADMIN_CONFIG_MAIL_SERVER: "'mailhog'"
+      PGADMIN_CONFIG_MAIL_PORT: 1025
+      PGADMIN_SERVER_JSON_FILE: /var/lib/pgadmin/servers.json
+    ports:
+      - 127.0.0.1:8054:80
+
+  ##
+  # redis
+  #
+  # A Redis key-value store container to act as the intranet cache.
+  #
+  redis:
+    <<: *defaults
+    image: redis:5
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 1s
+      timeout: 5s
+      retries: 30
+
+  ##
+  # rabbitmq
+  #
+  # A RabbitMQ container for brokering background tasks.
+  #
+  rabbitmq:
+    <<: *defaults
+    # The CPU limit for RabbitMQ is much lower in production (0.125) which is
+    # more than sufficient for its practical workload. However, this results in
+    # painfully slow startup and shutdown times in local development, so we bump
+    # it up to 1.0.
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    image: rabbitmq:3.9
+    # RabbitMQ relies on the hostname to track its data.
+    hostname: rabbitmq
+    user: rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "--quiet", "check_port_connectivity"]
+      interval: 1s
+      timeout: 5s
+      retries: 30
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq
+
+  ##
+  # flower
+  #
+  # A Flower container
+  #
+  flower:
+    <<: *defaults
+    image: mher/flower
+    command: celery --broker=amqp://guest:guest@rabbitmq flower --port=8888
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - 127.0.0.1:8888:8888
+
+  ##
+  # redis-commander
+  #
+  # A redis-commander instance for inspecting and managing the Redis instance.
+  #
+  # Accessible on port 8063
+  #
+  redis-commander:
+    <<: *defaults
+    image: rediscommander/redis-commander:latest
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      REDIS_HOST: redis
+    ports:
+      - 127.0.0.1:8063:8081
+
+  ##
+  # mailhog
+  #
+  # A MailHog container to act as a fake SMTP server for intercepting emails in
+  # development.
+  #
+  # Accessible on port 8025
+  #
+  mailhog:
+    <<: *defaults
+    image: mailhog/mailhog:latest
+    user: root
+    environment:
+      MH_STORAGE: maildir
+      MH_MAILDIR_PATH: /mail
+    ports:
+      - 127.0.0.1:8025:8025
+    volumes:
+      - mailhog:/mail
+
+  ##
+  # minio
+  #
+  # A minio container to act as a mock S3 provider in local development.
+  #
+  minio:
+    <<: *defaults
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio:/data
+    ports:
+      - 127.0.0.1:9000:9000
+      - 127.0.0.1:9001:9001
+    environment:
+      MINIO_ROOT_USER: development-only
+      MINIO_ROOT_PASSWORD: development-only
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 1s
+      timeout: 5s
+      retries: 30
+
+  ##
+  # create-buckets
+  #
+  # Creates mock S3 buckets in the minio service.
+  #
+  create-buckets:
+    <<: *defaults
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      sh -c "
+      mc config host add minio http://minio:9000 development-only development-only;
+      mc mb --ignore-existing minio/intranet;
+      mc policy set download minio/intranet;
+      "
+    restart: on-failure:3
