@@ -84,10 +84,12 @@ django-extensions = "*"
 django-health-check = "^3.17.0"
 django-timezone-field = "^5.0"
 django-waffle = "^3.0.0"
+gunicorn = {extras = ["setproctitle"], version = "^20.1.0"}
 ipython = "*"
 psutil = "^5.9.4"
 python = "^3.11"
 tzdata = "^2022.7"
+uvicorn = {extras = ["standard"], version = "^0.20.0"}
 whitenoise = {extras = ["brotli"], version = "^6.2.0"}
 
 [tool.poetry.group.dev.dependencies]
