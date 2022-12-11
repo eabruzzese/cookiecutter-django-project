@@ -44,7 +44,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Third-party apps
     "django_extensions",
+    "django_celery_results",
+    "django_celery_beat",
     "intranet.accounts",
 ]
 
@@ -150,3 +153,19 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "accounts.User"
+
+# Celery
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html
+CELERY_BROKER_URL = env.url("CELERY_BROKER_URL").geturl()
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_RESULT_EXTENDED = True
+CELERY_TASK_SERIALIZER = "json"
+CELERY_TASK_IGNORE_RESULT = env("CELERY_TASK_IGNORE_RESULT", default=True)
+CELERY_TASK_STORE_ERRORS_EVEN_IF_IGNORED = True
+CELERY_TASK_TRACK_STARTED = env("CELERY_TASK_TRACK_STARTED", default=True)
+CELERY_DISABLE_RATE_LIMITS = env("CELERY_DISABLE_RATE_LIMITS", default=True)
+CELERY_WORKER_CONCURRENCY = env("CELERY_WORKER_CONCURRENCY", default=12)
+CELERY_WORKER_MAX_TASKS_PER_CHILD = env("CELERY_WORKER_MAX_TASKS_PER_CHILD", default=12)
+CELERY_WORKER_MAX_MEMORY_PER_CHILD = env("CELERY_WORKER_MAX_MEMORY_PER_CHILD", default=(128 * 1024))
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
