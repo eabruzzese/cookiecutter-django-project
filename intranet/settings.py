@@ -33,7 +33,18 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG", default=False)
 
+# Security
+# https://docs.djangoproject.com/en/4.1/topics/security/
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
+SESSION_COOKIE_SECURE = env("SESSION_COOKIE_SECURE", default=True)
+CSRF_COOKIE_SECURE = env("CSRF_COOKIE_SECURE", default=True)
+SECURE_HSTS_SECONDS = env("SECURE_HSTS_SECONDS", default=0)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env("SECURE_HSTS_INCLUDE_SUBDOMAINS", default=False)
+SECURE_HSTS_PRELOAD = env("SECURE_HSTS_PRELOAD", default=False)
+SECURE_REFERRER_POLICY = env("SECURE_REFERRER_POLICY", default="no-referrer")
+SECURE_CROSS_ORIGIN_OPENER_POLICY = env("SECURE_CROSS_ORIGIN_OPENER_POLICY", default="same-origin")
+SECURE_CONTENT_TYPE_NOSNIFF = env("SECURE_CONTENT_TYPE_NOSNIFF", default=True)
+SECURE_SSL_REDIRECT = env("SECURE_SSL_REDIRECT", default=False)
 USE_X_FORWARDED_HOST = env("USE_X_FORWARDED_HOST", default=True)
 
 # Application definition
