@@ -95,6 +95,8 @@ repos:
       - id: check-docstring-first
       - id: check-ast
       - id: check-json
+        # Exclude VSCode's settings.json since it's actually JSONC
+        exclude: .vscode/settings.json
       - id: check-toml
       - id: check-yaml
 
