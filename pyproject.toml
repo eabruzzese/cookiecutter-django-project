@@ -114,7 +114,7 @@ mypy = "*"
 mypy-extensions = "*"
 myst-parser = "*"
 pre-commit = "*"
-pydocstyle = "*"
+pydocstyle = {version = "*", extras = ["toml"]}
 pytest = "*"
 pytest-django = "*"
 pytest-mock = "*"
@@ -124,6 +124,10 @@ sphinx_rtd_theme = "*"
 toml-sort = "*"
 watchdog = "^2.2.0"
 werkzeug = "*"
+
+[tool.pydocstyle]
+add_ignore = "D100,D104,D105,D106,D107,D200,D203,D205,D212,D400"
+convention = "google"
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "intranet.settings"

@@ -1927,6 +1927,7 @@ files = [
 
 [package.dependencies]
 snowballstemmer = "*"
+toml = {version = "*", optional = true, markers = "extra == \"toml\""}
 
 [package.extras]
 toml = ["toml"]
@@ -3038,4 +3039,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "a74d6fe0419cd676ca085d48b1c511085280e988a93b3db7b80e19d577f4acc3"
+content-hash = "5b36d08e28e948b7583799d04a8065b4eaa7fc51e46f3db13f765a4a09a569bb"
