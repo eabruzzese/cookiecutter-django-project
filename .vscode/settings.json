@@ -13,4 +13,7 @@
             "source.fixAll": true,
         },
     },
+    "[dockerfile]": {
+      "editor.formatOnSave": false,
+    }
 }

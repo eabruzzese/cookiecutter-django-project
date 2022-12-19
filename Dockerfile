@@ -43,7 +43,7 @@ RUN apt-get update \
 #
 # Installation happens in a temporary directory that's cleaned up at the end of
 # this step.
-ENV POETRY_VERSION=1.2.2 \
+ENV POETRY_VERSION=1.3.1 \
     POETRY_INSTALLER_GIT_REF="be23be56c57efc142da94376737ee6ead4e89a46" \
     POETRY_INSTALLER_SHA1="3aa6bf1f8343fd110dd7acd809e4d8496842a8d7" \
     POETRY_VIRTUALENVS_CREATE=false
