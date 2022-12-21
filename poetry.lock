@@ -343,6 +343,7 @@ click-plugins = ">=1.1.1"
 click-repl = ">=0.2.0"
 kombu = ">=5.2.3,<6.0"
 pytz = ">=2021.3"
+redis = {version = ">=3.4.1,<4.0.0 || >4.0.0,<4.0.1 || >4.0.1", optional = true, markers = "extra == \"redis\""}
 vine = ">=5.0.0,<6.0"
 
 [package.extras]
@@ -3039,4 +3040,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "5b36d08e28e948b7583799d04a8065b4eaa7fc51e46f3db13f765a4a09a569bb"
+content-hash = "23ccdd385abaedef3b02393ebfe2a9f96fddb27f15563f5b77cb05d3e951b907"
