@@ -1,0 +1,85 @@
+{% load django_htmx %}
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-white">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="description" content="{% block page_description %}{% endblock %}" />
+
+    {# Extra meta tags for control over SEO and the like. #}
+    {% block extra_meta %}{% endblock extra_meta %}
+
+    <title>{% block head_title %}{% endblock head_title %} | {% translate "{{ cookiecutter.project_name }}" %}</title>
+
+    {# Icons for various devices. #}
+    <link rel="shortcut icon" type="image/ico" href="{% static '{{ cookiecutter.package_name }}/img/favicon.ico' %}" />
+    <link rel="icon" type="image/png" href="{% static '{{ cookiecutter.package_name }}/img/logo_32.png' %}" />
+    <link rel="apple-touch-icon" href="{% static '{{ cookiecutter.package_name }}/img/logo_256.png' %}" />
+
+    {# Base stylesheets for granular control over cascade order. #}
+    <link rel="stylesheet" href="{% static 'theme/css/theme.css' %}" />
+
+    {# Inline styles for times where the page needs minor styling, but not enough to warrant a separate stylesheet. #}
+    <style>{% block inline_styles %}{% endblock inline_styles %}</style>
+  </head>
+  <body class="h-full">
+    {# Flash messages displayed as banners #}
+    {% if messages %}
+      {% for message in messages %}
+        <div x-data="{ dismissed: false }">
+          <div x-show="! dismissed" class="relative bg-indigo-600">
+            <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
+              <div class="pr-16 sm:text-center sm:px-16">
+                <p class="font-medium text-white">
+                  <span class="hidden md:inline">{{ message }}</span>
+                </p>
+              </div>
+              <div class="absolute inset-y-0 right-0 pt-1 pr-1 flex items-start sm:pt-1 sm:pr-2 sm:items-start">
+                <button @click="dismissed = true" type="button" class="flex p-2 rounded-md hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-white">
+                  <span class="sr-only">Dismiss</span>
+                  <!-- Heroicon name: outline/x -->
+                  <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    {% block body %}
+    {% endblock body %}
+
+    {# Modals #}
+    {% block modals %}
+    {% endblock modals %}
+
+    {# Scripts #}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js" integrity="sha512-3n19xznO0ubPpSwYCRRBgHh63DrV+bdZfHK52b1esvId4GsfwStQNPJFjeQos2h3JwCmZl0/LgLxSKMAI55hgw==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+    <script src="https://unpkg.com/alpinejs@3.10/dist/cdn.min.js" integrity="sha384-mDHH3kdyMS0F6QcfHCxEgPMMjssTurzucc7Jct3g1GOfB4p7PxJuugPP1NOLvE7I" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+    <script src="{% static 'js/htmx.min.js' %}" defer></script>
+    {% django_htmx_script %}
+
+    {# Extra (e.g. page-specific) scripts. #}
+    {% block extra_scripts %}{% endblock extra_scripts %}
+
+    <script type="text/javascript">
+      document.addEventListener("DOMContentLoaded", function() {
+        {% autoescape off %}
+          window._sharedData = {
+            'DEBUG': {% if debug %}true{% else %}false{% endif %},
+            {# Server-side data rendered as javascript #}
+            {% block shared_data %}{% endblock %}
+          };
+
+          {# Inline scripts for times when the page needs small amounts of javascript, but not enough to warrant a separate script. #}
+          {% block inline_script %}{% endblock inline_script %}
+        {% endautoescape %}
+      });
+    </script>
+  </body>
+</html>

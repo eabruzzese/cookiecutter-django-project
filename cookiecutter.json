@@ -1,0 +1,10 @@
+{
+    "author_name": "Author's full name",
+    "author_email": "author@example.com",
+    "github_repository": "your-github-organization/repository",
+    "project_name": "Project Name",
+    "project_slug": "{{ cookiecutter.project_name.lower()|replace(' ', '-') }}",
+    "project_description": "A short description of the project",
+    "project_license": ["MIT", "BSD", "ISCL", "Apache Software License 2.0", "Proprietary"],
+    "package_name": "{{ cookiecutter.project_slug.lower()|replace('-', '_') }}"
+}
