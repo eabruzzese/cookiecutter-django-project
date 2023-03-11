@@ -1,4 +1,4 @@
-Welcome to the RGBLAN intranet documentation!
+Welcome to the {{ cookiecutter.project_name }} documentation!
 ================================================
 
 .. include:: ../README.md

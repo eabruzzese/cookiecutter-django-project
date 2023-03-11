@@ -11,7 +11,7 @@ admin.site.login = staff_member_required(admin.site.login, login_url=settings.LO
 urlpatterns = [
     path("", RedirectView.as_view(url=settings.LOGIN_URL)),
     path("admin/", admin.site.urls),
-    path("accounts/", include("intranet.accounts.urls", namespace="accounts")),
+    path("accounts/", include("{{ cookiecutter.package_name }}.accounts.urls", namespace="accounts")),
     # NOTE: The django-allauth package does not support namespacing, and so we
     #       must include them in the root URL config.
     path("accounts/", include("allauth_2fa.urls")),

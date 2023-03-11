@@ -6,7 +6,7 @@ requires = ["poetry-core"]
 line-length = 100
 
 [tool.django-stubs]
-django_settings_module = "intranet.settings"
+django_settings_module = "{{ cookiecutter.package_name }}.settings"
 
 [tool.flakeheaven]
 exclude = [
@@ -66,10 +66,10 @@ warn_unreachable = true
 warn_unused_ignores = true
 
 [tool.poetry]
-authors = ["Eric Abruzzese <eric.abruzzese@gmail.com>"]
-description = "The intranet application for the RGBLAN events"
+authors = ["{{ cookiecutter.author_full_name <{{ cookiecutter.author_email }}>"]
+description = "{{ cookiecutter.project_description }}"
 license = "MIT"
-name = "intranet"
+name = "{{ cookiecutter.package_name }}"
 readme = "README.md"
 version = "0.1.0"
 
@@ -130,7 +130,7 @@ add_ignore = "D100,D104,D105,D106,D107,D200,D203,D205,D212,D400"
 convention = "google"
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "intranet.settings"
+DJANGO_SETTINGS_MODULE = "{{ cookiecutter.package_name }}.settings"
 addopts = "--durations=10"
 markers = [
   'api: mark a test as being an API test',

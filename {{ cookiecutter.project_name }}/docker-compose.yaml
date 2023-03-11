@@ -16,14 +16,14 @@ x-defaults: &defaults
   restart: unless-stopped
 
 ##
-# x-intranet
+# x-{{ cookiecutter.project_slug }}
 #
-# Defaults that should apply to the intranet container and its derivatives
+# Defaults that should apply to the {{ cookiecutter.project_slug }} container and its derivatives
 # (migrations, workers, etc).
 #
-x-intranet: &intranet
+x-{{ cookiecutter.project_slug }}: &{{ cookiecutter.project_slug }}
   <<: *defaults
-  image: gcr.io/rgblan/intranet:${IMAGE_TAG:-dev}
+  image: gcr.io/{{ cookiecutter.github_repository }}:${IMAGE_TAG:-dev}
   build:
     context: .
     target: ${BUILD_TARGET:-dev}
@@ -43,7 +43,7 @@ services:
   # The migrations service is a run-once service that will run database migrations.
   #
   migrations:
-    <<: *intranet
+    <<: *{{ cookiecutter.project_slug }}
     command: ./manage.py migrate
     depends_on:
       postgres:
@@ -56,7 +56,7 @@ services:
   # Seeds the database with fixture data.
   #
   seed:
-    <<: *intranet
+    <<: *{{ cookiecutter.project_slug }}
     command: |
       sh -c "
         ./manage.py createsuperuser --no-input
@@ -73,8 +73,8 @@ services:
   # Builds the theme and watches for changes.
   #
   # The container mounts two volumes -- one for the theme, and one for the
-  # intranet -- and will output the compiled theme artifacts into the
-  # appropriate static directory in the intranet project.
+  # project -- and will output the compiled theme artifacts into the
+  # appropriate static directory in the project.
   #
   # The intent is to mimic the `COPY --from=theme-build` directive in the `prod`
   # stage of the Dockerfile, while also maintaining the ability to watch for
@@ -95,17 +95,17 @@ services:
         hard: 4096
     environment:
       DISABLE_PURGE: 1
-    command: watch --output=/build/intranet/static/theme/css/theme.css
+    command: watch --output=/build/{{ cookiecutter.package_name }}/static/theme/css/theme.css
     volumes:
       - .:/build
 
   ##
-  # intranet
+  # {{ cookiecutter.project_slug }}
   #
-  # The primary intranet app.
+  # The primary {{ cookiecutter.project_slug }} app.
   #
-  intranet:
-    <<: *intranet
+  {{ cookiecutter.project_slug }}:
+    <<: *{{ cookiecutter.project_slug }}
     depends_on:
       migrations:
         condition: service_completed_successfully
@@ -128,13 +128,13 @@ services:
   # A celery worker for processing background tasks.
   #
   celery-worker:
-    <<: *intranet
+    <<: *{{ cookiecutter.project_slug }}
     deploy:
       resources:
         limits:
           cpus: '0.25'
           memory: 1G
-    command: watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery --app=intranet worker --uid=nobody --gid=nogroup --loglevel=INFO --task-events --without-gossip --without-heartbeat --without-mingle
+    command: watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery --app={{ cookiecutter.package_name }} worker --uid=nobody --gid=nogroup --loglevel=INFO --task-events --without-gossip --without-heartbeat --without-mingle
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -148,8 +148,8 @@ services:
   # A celery process for managing periodic tasks.
   #
   celery-beat:
-    <<: *intranet
-    command: watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery --app intranet beat --loglevel INFO
+    <<: *{{ cookiecutter.project_slug }}
+    command: watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery --app {{ cookiecutter.package_name }} beat --loglevel INFO
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -162,7 +162,7 @@ services:
   ##
   # postgres
   #
-  # The postgres database behind the intranet app.
+  # The postgres database behind the {{ cookiecutter.project_slug }} app.
   #
   postgres:
     <<: *defaults
@@ -201,7 +201,7 @@ services:
       mailhog:
         condition: service_started
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@intranet.local
+      PGADMIN_DEFAULT_EMAIL: {{ cookiecutter.author_email }}
       PGADMIN_DEFAULT_PASSWORD: development-only
       PGADMIN_CONFIG_MAIL_SERVER: "'mailhog'"
       PGADMIN_CONFIG_MAIL_PORT: 1025
@@ -212,7 +212,7 @@ services:
   ##
   # redis
   #
-  # A Redis key-value store container to act as the intranet cache.
+  # A Redis key-value store container to act as the application cache.
   #
   redis:
     <<: *defaults
@@ -341,7 +341,7 @@ services:
     entrypoint: >
       sh -c "
       mc config host add minio http://minio:9000 development-only development-only;
-      mc mb --ignore-existing minio/intranet;
-      mc policy set download minio/intranet;
+      mc mb --ignore-existing minio/{{ cookiecutter.project_slug }};
+      mc policy set download minio/{{ cookiecutter.project_slug }};
       "
     restart: on-failure:3

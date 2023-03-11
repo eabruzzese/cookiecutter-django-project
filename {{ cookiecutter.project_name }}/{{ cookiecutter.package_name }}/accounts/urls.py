@@ -1,6 +1,6 @@
 from django.urls import re_path
 
-from intranet.accounts import views
+from {{ cookiecutter.package_name }}.accounts import views
 
 app_name = "accounts"
 

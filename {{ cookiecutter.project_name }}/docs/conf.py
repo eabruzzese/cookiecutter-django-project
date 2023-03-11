@@ -9,9 +9,9 @@ import sys
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "intranet"
-copyright = "2022, RGBLAN"
-author = "RGBLAN"
+project = "{{ cookiecutter.package_name }}"
+copyright = "2022, {{ cookiecutter.author_full_name }}"
+author = "{{ cookiecutter.author_full_name }}"
 release = "0.1.0"
 
 # Configure the PYTHONPATH to include our package.

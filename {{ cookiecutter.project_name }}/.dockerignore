@@ -165,7 +165,7 @@ site
 
 # Frontend artifacts
 **/node_modules
-**/intranet/static/theme
+**/{{ cookiecutter.package_name }}/static/theme
 
 # flyctl launch added from .mypy_cache/.gitignore
 # Automatically created by mypy

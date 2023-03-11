@@ -11,12 +11,12 @@
     {# Extra meta tags for control over SEO and the like. #}
     {% block extra_meta %}{% endblock extra_meta %}
 
-    <title>{% block head_title %}{% endblock head_title %} | {% translate "Intranet" %}</title>
+    <title>{% block head_title %}{% endblock head_title %} | {% translate "{{ cookiecutter.project_name }}" %}</title>
 
     {# Icons for various devices. #}
-    <link rel="shortcut icon" type="image/ico" href="{% static 'intranet/img/favicon.ico' %}" />
-    <link rel="icon" type="image/png" href="{% static 'intranet/img/logo_32.png' %}" />
-    <link rel="apple-touch-icon" href="{% static 'intranet/img/logo_256.png' %}" />
+    <link rel="shortcut icon" type="image/ico" href="{% static '{{ cookiecutter.package_name }}/img/favicon.ico' %}" />
+    <link rel="icon" type="image/png" href="{% static '{{ cookiecutter.package_name }}/img/logo_32.png' %}" />
+    <link rel="apple-touch-icon" href="{% static '{{ cookiecutter.package_name }}/img/logo_256.png' %}" />
 
     {# Base stylesheets for granular control over cascade order. #}
     <link rel="stylesheet" href="{% static 'theme/css/theme.css' %}" />

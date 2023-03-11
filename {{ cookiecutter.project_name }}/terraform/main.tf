@@ -8,5 +8,5 @@ data "aws_availability_zones" "available" {
 }
 
 locals {
-  cluster_name = "intranet-${random_string.suffix.result}"
+  cluster_name = "{{ cookiecutter.project_slug }}-${random_string.suffix.result}"
 }

@@ -101,9 +101,9 @@ EXPOSE 8000
 #
 FROM node:lts-bullseye-slim AS theme-build
 
-# Copy the whole intranet project (needed so that Tailwind can scan for its
-# classes in the template files).
-COPY ./intranet/. /build/intranet/.
+# Copy the whole project (needed so that Tailwind can scan for its classes in
+# the template files).
+COPY ./{{ cookiecutter.package_name }}/. /build/{{ cookiecutter.package_name }}/.
 
 # Copy the theme source.
 COPY ./theme/. /build/theme/.
@@ -128,10 +128,10 @@ ENV GUNICORN_CMD_ARGS="--workers 3 --worker-connections=1000"
 # Copy the application code and configuration.
 COPY ./conf/. /app/conf/.
 COPY ./manage.py /app/.
-COPY ./intranet/. /app/intranet/.
+COPY ./{{ cookiecutter.package_name }}/. /app/{{ cookiecutter.package_name }}/.
 
 # Copy the theme from the theme-build stage.
-COPY --from=theme-build /build/theme/dist/css/theme.css /app/intranet/static/theme/css/theme.css
+COPY --from=theme-build /build/theme/dist/css/theme.css /app/{{ cookiecutter.package_name }}/static/theme/css/theme.css
 
 # Run collectstatic to colocate all of the required static assets. Note that we
 # source the .env.example for this step, as the ./manage.py script requires that
@@ -145,7 +145,7 @@ RUN ( \
   && rm -f /tmp/.env.example \
 )
 
-CMD ["gunicorn", "--config=conf/gunicorn.conf.py", "intranet.asgi:application"]
+CMD ["gunicorn", "--config=conf/gunicorn.conf.py", "{{ cookiecutter.package_name }}.asgi:application"]
 
 EXPOSE 8000
 
