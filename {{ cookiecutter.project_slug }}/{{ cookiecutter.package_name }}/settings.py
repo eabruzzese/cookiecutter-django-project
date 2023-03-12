@@ -197,7 +197,12 @@ MIDDLEWARE = [
     # Activates a user's time zone based on their preferences.
     #
     # See: {{ cookiecutter.package_name }}.accounts.middleware.TimeZoneMiddleware
-    "{{ cookiecutter.package_name }}.accounts.middleware.TimeZoneMiddleware",
+    "{{ cookiecutter.package_name }}.accounts.middleware.TimeZoneMiddleware"
+    ##
+    # Enforces the use of 2FA for eligible users.
+    #
+    # See: {{ cookiecutter.package_name }}.accounts.middleware.Enforce2FAMiddleware
+    "{{ cookiecutter.package_name }}.accounts.middleware.Enforce2FAMiddleware",,
 ]
 
 # Disable the cache middleware when DEBUG is enabled.
@@ -377,6 +382,9 @@ ACCOUNT_FORMS = {"signup": "{{ cookiecutter.package_name }}.accounts.forms.Signu
 ACCOUNT_LOGIN_ATTEMPTS_LIMIT = env("ACCOUNT_LOGIN_ATTEMPTS_LIMIT", default=5)
 ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = env("ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT", default=300)
 OTP_ADMIN_HIDE_SENSITIVE_DATA = True
+
+# Require 2FA for all staff (and superuser) accounts.
+ACCOUNTS_STAFF_REQUIRE_2FA = env("ACCOUNTS_STAFF_REQUIRE_2FA", default=True)
 
 # ReCAPTCHA
 # https://github.com/torchbox/django-recaptcha
