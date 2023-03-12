@@ -100,7 +100,7 @@ psycopg2 = "^2.9.5"
 python = "^3.11"
 tzdata = "^2022.7"
 uvicorn = {extras = ["standard"], version = "^0.21.0"}
-whitenoise = {extras = ["brotli"], version = "^6.2.0"}
+whitenoise = {extras = ["brotli"], version = "^6.4.0"}
 
 [tool.poetry.group.dev.dependencies]
 autoflake = "<2"
