@@ -76,7 +76,7 @@ version = "0.1.0"
 [tool.poetry.dependencies]
 celery = {extras = ["redis"], version = "^5.2.7"}
 django = "^4"
-django-allauth = "^0.51.0"
+django-allauth = "^0.52.0"
 django-allauth-2fa = "^0.10.0"
 django-celery-beat = "^2.4.0"
 django-celery-results = "^2.4.0"
