@@ -197,12 +197,12 @@ MIDDLEWARE = [
     # Activates a user's time zone based on their preferences.
     #
     # See: {{ cookiecutter.package_name }}.accounts.middleware.TimeZoneMiddleware
-    "{{ cookiecutter.package_name }}.accounts.middleware.TimeZoneMiddleware"
+    "{{ cookiecutter.package_name }}.accounts.middleware.TimeZoneMiddleware",
     ##
     # Enforces the use of 2FA for eligible users.
     #
     # See: {{ cookiecutter.package_name }}.accounts.middleware.Enforce2FAMiddleware
-    "{{ cookiecutter.package_name }}.accounts.middleware.Enforce2FAMiddleware",,
+    "{{ cookiecutter.package_name }}.accounts.middleware.Enforce2FAMiddleware",
 ]
 
 # Disable the cache middleware when DEBUG is enabled.
