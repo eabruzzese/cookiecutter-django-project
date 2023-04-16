@@ -623,6 +623,20 @@ files = [
 ]
 
 [[package]]
+name = "cron-descriptor"
+version = "1.2.35"
+description = "A Python library that converts cron expressions into human readable strings."
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "cron_descriptor-1.2.35.tar.gz", hash = "sha256:7b6fc5e07f3e505d247f35ef432a098d75769efdaf01b04ab8e42a528c75266d"},
+]
+
+[package.extras]
+dev = ["polib"]
+
+[[package]]
 name = "cryptography"
 version = "39.0.1"
 description = "cryptography is a package which provides cryptographic recipes and primitives to Python developers."
@@ -763,19 +777,20 @@ qrcode = ">=5.3"
 
 [[package]]
 name = "django-celery-beat"
-version = "2.4.0"
+version = "2.5.0"
 description = "Database-backed Periodic Tasks."
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "django-celery-beat-2.4.0.tar.gz", hash = "sha256:58efe9460e4373a241c2b3d839518f29a28ae19bc80a8dba20da204c7ea50613"},
-    {file = "django_celery_beat-2.4.0-py3-none-any.whl", hash = "sha256:a20b7a7857daaa2eea1f4cfefb2a965456800216f5763c6cf918c2e21372b3c8"},
+    {file = "django-celery-beat-2.5.0.tar.gz", hash = "sha256:cd0a47f5958402f51ac0c715bc942ae33d7b50b4e48cba91bc3f2712be505df1"},
+    {file = "django_celery_beat-2.5.0-py3-none-any.whl", hash = "sha256:ae460faa5ea142fba0875409095d22f6bd7bcc7377889b85e8cab5c0dfb781fe"},
 ]
 
 [package.dependencies]
 celery = ">=5.2.3,<6.0"
-Django = ">=2.2,<4.2"
+cron-descriptor = ">=1.2.32"
+Django = ">=2.2,<5.0"
 django-timezone-field = ">=5.0"
 python-crontab = ">=2.3.4"
 tzdata = "*"
@@ -3097,4 +3112,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "6727d7c02bc396c80ab086c144919dcefce85e8710ce657b1f36ef043b54cb9e"
+content-hash = "5c0da229ef33f48a1b824e583c34ed1b3efcb603e918eeb4f02e8326f665495e"
