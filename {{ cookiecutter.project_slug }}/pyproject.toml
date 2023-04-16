@@ -96,7 +96,7 @@ django-waffle = "^3.0.0"
 gunicorn = {extras = ["setproctitle"], version = "^20.1.0"}
 ipython = "*"
 psutil = "^5.9.4"
-psycopg2 = "^2.9.5"
+psycopg2 = "^2.9.6"
 python = "^3.11"
 tzdata = "^2022.7"
 uvicorn = {extras = ["standard"], version = "^0.21.0"}
