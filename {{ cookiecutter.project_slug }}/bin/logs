@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+
+set -e
+
+[ -n "${DEBUG:-""}" ] && set -x
+
+PROJECT_ROOT="$(git rev-parse --show-toplevel)"
+
+##
+# main
+#
+# Controls primary script execution.
+#
+main () {
+    (
+        cd "$PROJECT_ROOT" || exit 1;
+
+        # Tail the logs.
+        docker compose logs --timestamps --follow "$@"
+    )
+}
+
+
+main "$@"

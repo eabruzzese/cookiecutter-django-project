@@ -1,0 +1,59 @@
+#!/usr/bin/env sh
+
+set -e
+
+[ -n "${DEBUG:-""}" ] && set -x
+
+PROJECT_ROOT="$(git rev-parse --show-toplevel)"
+
+##
+# main
+#
+# Controls primary script execution.
+#
+main () {
+    (
+        cd "$PROJECT_ROOT" || exit 1;
+
+        # Generate a .env from the .env.example if it doesn't exist.
+        test -f .env || cp .env.example .env
+
+        # Bring up the Docker project.
+        docker compose up --build --remove-orphans --detach
+
+        cat <<'EOF'
+
+        The project is finishing setup in the background. It make take a few
+        moments for everything to become available.
+
+
+        SERVICES
+        --------
+
+        * Site Admin .............. http://localhost:8000/admin
+            Username: admin
+            Password: development-only
+
+
+        TOOLS
+        -----
+
+        * Redis-Commander ......... http://localhost:8063
+        * MailHog ................. http://localhost:8025
+        * pgadmin4 ................ http://localhost:8054
+            Email: {{ cookiecutter.author_email }}
+            Password: development-only
+        * Minio (mock S3) ......... http://localhost:9001
+            Access key: development-only
+            Secret key: development-only
+        * Flower .................. http://localhost:8888
+
+        You can tail the logs with `bin/logs` to monitor progress.
+
+        Happy hacking!
+EOF
+    )
+}
+
+
+main "$@"
