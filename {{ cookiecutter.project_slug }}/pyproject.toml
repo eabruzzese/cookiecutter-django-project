@@ -99,7 +99,7 @@ psutil = "^5.9.4"
 psycopg2 = "^2.9.6"
 python = "^3.11"
 tzdata = "^2023.3"
-uvicorn = {extras = ["standard"], version = "^0.21.1"}
+uvicorn = {extras = ["standard"], version = "^0.22.0"}
 whitenoise = {extras = ["brotli"], version = "^6.4.0"}
 
 [tool.poetry.group.dev.dependencies]
