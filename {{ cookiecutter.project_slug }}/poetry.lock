@@ -928,18 +928,18 @@ Django = ">=3.2"
 
 [[package]]
 name = "django-otp"
-version = "1.1.6"
+version = "1.2.1"
 description = "A pluggable framework for adding two-factor authentication to Django using one-time passwords."
 category = "main"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7"
 files = [
-    {file = "django-otp-1.1.6.tar.gz", hash = "sha256:eac8e06041efe90e0687faea997fc0b3340f5bc74476f20aca0f6a96978f4253"},
-    {file = "django_otp-1.1.6-py3-none-any.whl", hash = "sha256:8a431a934afdd4359ab838551d02d68d3cd90c974aa9e7337cbcbb6d45db621b"},
+    {file = "django_otp-1.2.1-py3-none-any.whl", hash = "sha256:1758aabfc17c30ba00142e823c961e20d2a0353040a9e4e4be2688cf71085446"},
+    {file = "django_otp-1.2.1.tar.gz", hash = "sha256:d4785291fc97eb61c02574660f7ae82baab04da187fa5d0fb649d57deea2c62e"},
 ]
 
 [package.dependencies]
-django = ">=2.2"
+django = ">=3.2"
 
 [package.extras]
 qrcode = ["qrcode"]
@@ -3112,4 +3112,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "5c0da229ef33f48a1b824e583c34ed1b3efcb603e918eeb4f02e8326f665495e"
+content-hash = "9baffb98ab826160019bf1516c95d0a2b02d299d66664038b443377c43f942b1"
