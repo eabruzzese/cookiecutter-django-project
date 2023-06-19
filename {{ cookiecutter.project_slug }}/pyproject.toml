@@ -74,7 +74,7 @@ readme = "README.md"
 version = "0.1.0"
 
 [tool.poetry.dependencies]
-celery = {extras = ["redis"], version = "^5.2.7"}
+celery = {extras = ["redis"], version = "^5.3.1"}
 django = "^4"
 django-allauth = "^0.54.0"
 django-allauth-2fa = "^0.10.0"
