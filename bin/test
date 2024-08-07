@@ -1,0 +1,38 @@
+#!/usr/bin/env sh
+
+set -e
+
+[ -n "${DEBUG:-""}" ] && set -x
+
+PROJECT_ROOT="$(git rev-parse --show-toplevel)"
+
+##
+# main
+#
+# Controls primary script execution.
+#
+main () {
+    (
+        cd "$PROJECT_ROOT" || exit 1;
+
+        project_dir="$(mktemp -d)"
+
+        pipx run cookiecutter . \
+            --output-dir="$project_dir" \
+            --no-input \
+            --keep-project-on-failure
+
+        cd "$project_dir/project-name"
+        git init .
+        git add --all
+        git commit -m "Initial boilerplate"
+        bin/setup
+        docker compose down --volumes
+        poetry run pre-commit run --all-files || true
+        git status
+        echo "$project_dir"
+    )
+}
+
+
+main "$@"
