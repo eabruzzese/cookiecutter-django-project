@@ -165,8 +165,3 @@ cython_debug/
 # Frontend artifacts
 node_modules
 {{ cookiecutter.package_name }}/static/theme
-
-# Terraform artifacts
-.terraform/
-terraform.tfstate
-terraform.tfstate.*
