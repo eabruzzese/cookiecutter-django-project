@@ -16,7 +16,7 @@ main () {
         cd "$PROJECT_ROOT" || exit 1;
 
         # Tail the logs.
-        docker compose logs --timestamps --follow "$@"
+        docker compose logs --timestamps --follow --since=1m "$@"
     )
 }
 
