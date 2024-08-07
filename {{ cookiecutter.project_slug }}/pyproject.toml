@@ -14,47 +14,48 @@ readme = "README.md"
 version = "0.1.0"
 
 [tool.poetry.dependencies]
-celery = {extras = ["redis"], version = "^5.2.7"}
-django = "^4"
-django-allauth = "^0.54.0"
+celery = {extras = ["redis"], version = "^5.4.0"}
+django = "^5.1"
+django-allauth = "^64.0.0"
 django-allauth-2fa = "^0.10.0"
-django-celery-beat = "^2.5.0"
-django-celery-results = "^2.4.0"
-django-constance = {extras = ["database"], version = "^2.9.1"}
-django-cors-headers = "^3.14.0"
-django-debug-toolbar = "^4.0.0"
+# Pin celery beat to a commit in master until a new release is cut for Django 5.1 support.
+django-celery-beat = { git = "https://github.com/celery/django-celery-beat.git", rev = "fcc4ba7" }
+django-celery-results = "^2.5.1"
+django-constance = {extras = ["database"], version = "^3.1.0"}
+django-cors-headers = "^4.4.0"
+django-debug-toolbar = "^4.4.6"
 django-environ = "^0.10.0"
-django-extensions = "*"
-django-health-check = "^3.17.0"
-django-htmx = "^1.14.0"
-django-otp = "^1.1.6"
-django-recaptcha = "^3.0.0"
-django-redis = "^5.2.0"
-django-storages = {extras = ["boto3"], version = "^1.13.2"}
-django-timezone-field = "^5.0"
-django-waffle = "^3.0.0"
-gunicorn = {extras = ["setproctitle"], version = "^20.1.0"}
-ipython = "*"
-psutil = "^5.9.4"
-psycopg2 = "^2.9.6"
+django-extensions = "^3.2.3"
+django-health-check = "^3.18.3"
+django-htmx = "^1.19.0"
+django-otp = "^1.5.1"
+django-recaptcha = "^4.0.0"
+django-redis = "^5.4.0"
+django-storages = {extras = ["boto3"], version = "^1.14.4"}
+django-timezone-field = "^7.0"
+django-waffle = "^4.1.0"
+gunicorn = {extras = ["setproctitle"], version = "^22.0.0"}
+ipython = "^8.26.0"
+psutil = "^6.0.0"
+psycopg2 = "^2.9.9"
 python = "^3.11"
-tzdata = "^2023.3"
+tzdata = "^2024.1"
 uvicorn = {extras = ["standard"], version = "^0.21.1"}
-whitenoise = {extras = ["brotli"], version = "^6.4.0"}
+whitenoise = {extras = ["brotli"], version = "^6.7.0"}
 
 [tool.poetry.group.dev.dependencies]
 celery-stubs = "^0.1.3"
-django-stubs = "^1.15.0"
-djhtml = "^3.0.5"
-mypy = "^1.2.0"
+django-stubs = "^5.0.4"
+djhtml = "^3.0.6"
+mypy = "^1.11.1"
 mypy-extensions = "^1.0.0"
-pre-commit = "^3.2.2"
-pytest = "^7.2.2"
-pytest-django = "^4.5.2"
-pytest-mock = "^3.10.0"
+pre-commit = "^3.8.0"
+pytest = "^8.3.2"
+pytest-django = "^4.8.0"
+pytest-mock = "^3.14.0"
 toml-sort = "^0.23.0"
-watchdog = "^3.0.0"
-werkzeug = "^2.2.3"
+watchdog = "^4.0.1"
+werkzeug = "^3.0.3"
 
 [tool.django-stubs]
 django_settings_module = "{{ cookiecutter.package_name }}.settings"

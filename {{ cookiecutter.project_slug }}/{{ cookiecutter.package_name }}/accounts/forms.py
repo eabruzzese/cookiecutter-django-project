@@ -1,6 +1,6 @@
 from allauth.account.forms import SignupForm as BaseSignupForm
-from captcha.fields import ReCaptchaField
-from captcha.widgets import ReCaptchaV2Invisible
+from django_recaptcha.fields import ReCaptchaField
+from django_recaptcha.widgets import ReCaptchaV2Invisible
 
 
 class SignupForm(BaseSignupForm):
