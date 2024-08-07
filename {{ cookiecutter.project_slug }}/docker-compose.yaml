@@ -2,7 +2,7 @@ volumes:
   postgres:
   mailhog:
   minio:
-  rabbitmq:
+  redis:
 
 ##
 # x-defaults
@@ -27,9 +27,9 @@ x-{{ cookiecutter.project_slug }}: &{{ cookiecutter.project_slug }}
     target: ${BUILD_TARGET:-dev}
   environment:
     DATABASE_URL: postgres://postgres:development-only@postgres/postgres
-    CACHE_URL: redis://redis:6379
+    CACHE_URL: redis://redis:6379/0
     EMAIL_URL: smtp://mailhog:1025
-    CELERY_BROKER_URL: amqp://guest:guest@rabbitmq
+    CELERY_BROKER_URL: redis://redis:6379/1
   env_file: .env
   volumes:
     - .:/app
@@ -115,8 +115,6 @@ services:
         condition: service_started
       minio:
         condition: service_started
-      rabbitmq:
-        condition: service_healthy
     ports:
       - 127.0.0.1:8000:8000
 
@@ -134,7 +132,7 @@ services:
           memory: 1G
     command: watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery --app={{ cookiecutter.package_name }} worker --uid=nobody --gid=nogroup --loglevel=INFO --task-events --without-gossip --without-heartbeat --without-mingle
     depends_on:
-      rabbitmq:
+      redis:
         condition: service_healthy
       migrations:
         condition: service_completed_successfully
@@ -149,7 +147,7 @@ services:
     <<: *{{ cookiecutter.project_slug }}
     command: watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery --app {{ cookiecutter.package_name }} beat --loglevel INFO
     depends_on:
-      rabbitmq:
+      redis:
         condition: service_healthy
       migrations:
         condition: service_completed_successfully
@@ -215,39 +213,14 @@ services:
   redis:
     <<: *defaults
     image: redis:latest
+    command: --appendonly yes
+    volumes:
+      - redis:/data
     healthcheck:
       test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
       interval: 1s
       timeout: 5s
       retries: 30
-
-  ##
-  # rabbitmq
-  #
-  # A RabbitMQ container for brokering background tasks.
-  #
-  rabbitmq:
-    <<: *defaults
-    # The CPU limit for RabbitMQ is much lower in production (0.125) which is
-    # more than sufficient for its practical workload. However, this results in
-    # painfully slow startup and shutdown times in local development, so we bump
-    # it up to 1.0.
-    deploy:
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: 512M
-    image: rabbitmq:latest
-    # RabbitMQ relies on the hostname to track its data.
-    hostname: rabbitmq
-    user: rabbitmq
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "--quiet", "check_port_connectivity"]
-      interval: 1s
-      timeout: 5s
-      retries: 30
-    volumes:
-      - rabbitmq:/var/lib/rabbitmq
 
   ##
   # flower
@@ -257,9 +230,9 @@ services:
   flower:
     <<: *defaults
     image: mher/flower:latest
-    command: celery --broker=amqp://guest:guest@rabbitmq flower --port=8888
+    command: celery --broker=redis://redis:6379/1 flower --port=8888
     depends_on:
-      rabbitmq:
+      redis:
         condition: service_healthy
     ports:
       - 127.0.0.1:8888:8888
