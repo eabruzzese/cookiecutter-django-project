@@ -1,10 +1,9 @@
 ##
 # base
 #
-# A base image suitable for development. Assumes a volume will be mounted at
-# /app.
+# A base image suitable for all stages.
 #
-FROM python:3.11-slim-bullseye AS base
+FROM python:3.12-slim-bookworm AS base
 
 ARG GIT_COMMIT_HASH
 
@@ -20,7 +19,8 @@ ENV PATH=$PATH:/root/.local/bin:/root/.poetry/bin \
 
 WORKDIR /app
 
-RUN apt-get update \
+RUN --mount=type=cache,target=/var/cache/apt \
+    apt-get update \
  && apt-get install --assume-yes --no-install-recommends \
     curl \
     git \
@@ -30,7 +30,7 @@ RUN apt-get update \
  && echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
  && curl -fsSL "https://www.postgresql.org/media/keys/ACCC4CF8.asc" | apt-key add - \
  && apt-get update \
- && apt-get install --assume-yes --no-install-recommends postgresql-client-14 \
+ && apt-get install --assume-yes --no-install-recommends postgresql-client-16 \
  && rm -rf /var/lib/apt/lists/* \
  && apt-get autoremove --assume-yes \
  && apt-get clean --assume-yes \
@@ -43,7 +43,7 @@ RUN apt-get update \
 #
 # Installation happens in a temporary directory that's cleaned up at the end of
 # this step.
-ENV POETRY_VERSION=1.3.1 \
+ENV POETRY_VERSION=1.8.3 \
     POETRY_INSTALLER_GIT_REF="be23be56c57efc142da94376737ee6ead4e89a46" \
     POETRY_INSTALLER_SHA1="3aa6bf1f8343fd110dd7acd809e4d8496842a8d7" \
     POETRY_VIRTUALENVS_CREATE=false
@@ -59,7 +59,9 @@ RUN echo "Installing poetry..." \
 
 # Install our production python dependencies.
 COPY pyproject.toml poetry.lock /app/
-RUN apt-get update \
+RUN --mount=type=cache,target=/var/cache/apt \
+    --mount=type=cache,target=/root/.cache/pypoetry \
+    apt-get update \
  && apt-get install --assume-yes --no-install-recommends \
     build-essential \
     libffi-dev \
@@ -158,7 +160,7 @@ EXPOSE 8000
 # Attempts to emulate the prod image as closely as possible, and includes
 # dependencies required for testing.
 #
-FROM prod as test
+FROM prod AS test
 
 # Install all dependencies (including dev and test dependencies).
 RUN poetry install
