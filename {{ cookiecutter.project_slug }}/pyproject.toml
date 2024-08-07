@@ -34,7 +34,6 @@ django-redis = "^5.4.0"
 django-storages = {extras = ["boto3"], version = "^1.14.4"}
 django-timezone-field = "^7.0"
 django-waffle = "^4.1.0"
-gunicorn = {extras = ["setproctitle"], version = "^22.0.0"}
 ipython = "^8.26.0"
 psutil = "^6.0.0"
 psycopg2 = "^2.9.9"

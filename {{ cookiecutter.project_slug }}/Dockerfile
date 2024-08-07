@@ -125,10 +125,11 @@ ENTRYPOINT ["yarn", "run"]
 # Includes production-only dependencies and configuration.
 #
 FROM base AS prod
-ENV GUNICORN_CMD_ARGS="--workers 3 --worker-connections=1000"
+ENV UVICORN_HOST=0.0.0.0 \
+    UVICORN_PORT=8000 \
+    UVICORN_WORKERS=3
 
 # Copy the application code and configuration.
-COPY ./conf/. /app/conf/.
 COPY ./manage.py /app/.
 COPY ./{{ cookiecutter.package_name }}/. /app/{{ cookiecutter.package_name }}/.
 
@@ -147,7 +148,7 @@ RUN ( \
   && rm -f /tmp/.env.example \
 )
 
-CMD ["gunicorn", "--config=conf/gunicorn.conf.py", "{{ cookiecutter.package_name }}.asgi:application"]
+CMD ["uvicorn", "{{ cookiecutter.package_name }}.asgi:application"]
 
 EXPOSE 8000
 
