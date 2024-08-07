@@ -1,0 +1,15 @@
+{
+  "python.analysis.autoImportCompletions": true,
+  "ruff.configuration": "{{ cookiecutter.project_slug }}/pyproject.toml",
+  "[python]": {
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "editor.defaultFormatter": "charliermarsh.ruff",
+  },
+  "[dockerfile]": {
+    "editor.formatOnSave": false,
+  }
+}
