@@ -27,10 +27,10 @@ main () {
         git add --all
         git commit -m "Initial boilerplate"
         bin/setup
-        docker compose down --volumes
+        curl --retry 10 --fail --retry-all-errors --retry-delay 5 --silent --output /dev/null "http://localhost:8000/healthcheck"
+        BUILDKIT_PROGRESS=plain COMPOSE_ANSI=never docker compose down --volumes
         poetry run pre-commit run --all-files || true
-        git status
-        echo "$project_dir"
+        git status --porcelain
     )
 }
 
