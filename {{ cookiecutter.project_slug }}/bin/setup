@@ -19,7 +19,7 @@ main () {
         test -f .env || cp .env.example .env
 
         # Bring up the Docker project.
-        docker compose up --build --remove-orphans --detach
+        BUILDKIT_PROGRESS=plain COMPOSE_ANSI=never docker compose up --build --remove-orphans --detach
 
         cat <<'EOF'
 
