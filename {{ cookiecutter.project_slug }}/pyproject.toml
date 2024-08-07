@@ -2,9 +2,6 @@
 build-backend = "poetry.core.masonry.api"
 requires = ["poetry-core"]
 
-[project]
-requires-python = "^3.12"
-
 [tool.poetry]
 authors = ["{{ cookiecutter.author_name }} <{{ cookiecutter.author_email }}>"]
 description = "{{ cookiecutter.project_description }}"
@@ -19,7 +16,7 @@ django = "^5.1"
 django-allauth = "^64.0.0"
 django-allauth-2fa = "^0.10.0"
 # Pin celery beat to a commit in master until a new release is cut for Django 5.1 support.
-django-celery-beat = { git = "https://github.com/celery/django-celery-beat.git", rev = "fcc4ba7" }
+django-celery-beat = {git = "https://github.com/celery/django-celery-beat.git", rev = "fcc4ba7"}
 django-celery-results = "^2.5.1"
 django-constance = {extras = ["database"], version = "^3.1.0"}
 django-cors-headers = "^4.4.0"
@@ -84,6 +81,8 @@ warn_return_any = false
 warn_unreachable = true
 warn_unused_ignores = true
 
+[tool.pytest]
+
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "{{ cookiecutter.package_name }}.settings"
 addopts = "--durations=10"
@@ -101,9 +100,9 @@ norecursedirs = [
   "static-files"
 ]
 python_files = [
-  "tests.py",
+  "*_tests.py",
   "test_*.py",
-  "*_tests.py"
+  "tests.py"
 ]
 
 # See:
