@@ -1,0 +1,23 @@
+{% raw %}{% extends "account/base.html" %}
+{% load i18n %}
+
+{% block head_title %}{% translate "2FA Setup" %}{% endblock head_title %}
+{% block title %}{% translate "Recovery Codes" %}{% endblock title %}
+{% block subtitle %}{% translate "Save your recovery codes in case you lose access to your 2FA device." %}{% endblock subtitle %}
+
+{% block content %}
+  <p class="my-8 text-sm text-gray-600">
+    {% blocktranslate count unused_count=unused_codes|length %}There is {{ unused_count }} out of {{ total_count }} recovery codes available.{% plural %}There are {{ unused_count }} out of {{ total_count }} recovery codes available.{% endblocktranslate %}
+  </p>
+  <ul class="my-2 text-2xl text-center tracking-widest leading-normal">
+    {% for code in unused_codes %}
+      <li><code>{{ code }}</code></li>
+    {% endfor %}
+  </ul>
+
+
+  <a href="{{ next | default:'/' }}"
+     class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+    {% translate "Continue" %}
+  </a>
+{% endblock %}{% endraw %}

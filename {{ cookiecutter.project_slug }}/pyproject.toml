@@ -13,8 +13,7 @@ version = "0.1.0"
 [tool.poetry.dependencies]
 celery = {extras = ["redis"], version = "^5.4.0"}
 django = "^5.1"
-django-allauth = "^64.0.0"
-django-allauth-2fa = "^0.10.0"
+django-allauth = {extras = ["mfa"], version = "^64.0.0"}
 # Pin celery beat to a commit in master until a new release is cut for Django 5.1 support.
 django-celery-beat = {git = "https://github.com/celery/django-celery-beat.git", rev = "fcc4ba7"}
 django-celery-results = "^2.5.1"
