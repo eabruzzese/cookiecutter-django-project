@@ -6,8 +6,6 @@ from constance import config
 if TYPE_CHECKING:
     from django.http import HttpRequest
 
-    from .models import User
-
 
 class AccountAdapter(DefaultAccountAdapter):
     """A django-allauth adapter for customizing authn flows."""
