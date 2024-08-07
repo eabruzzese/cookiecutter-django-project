@@ -77,8 +77,8 @@ repos:
       - id: mypy
         entry: |
           bash -c "
-            python -m pip install --upgrade pip setuptools wheel \
-            && poetry install --no-ansi \
+            poetry install --no-ansi \
+            && set -a && source .env && set +a \
             && exec poetry run mypy $@
           "
         args: ["--install-types"]
