@@ -43,9 +43,7 @@ SECURE_HSTS_SECONDS = env("SECURE_HSTS_SECONDS", default=0)
 SECURE_HSTS_INCLUDE_SUBDOMAINS = env("SECURE_HSTS_INCLUDE_SUBDOMAINS", default=False)
 SECURE_HSTS_PRELOAD = env("SECURE_HSTS_PRELOAD", default=False)
 SECURE_REFERRER_POLICY = env("SECURE_REFERRER_POLICY", default="same-origin")
-SECURE_CROSS_ORIGIN_OPENER_POLICY = env(
-    "SECURE_CROSS_ORIGIN_OPENER_POLICY", default="same-origin"
-)
+SECURE_CROSS_ORIGIN_OPENER_POLICY = env("SECURE_CROSS_ORIGIN_OPENER_POLICY", default="same-origin")
 SECURE_CONTENT_TYPE_NOSNIFF = env("SECURE_CONTENT_TYPE_NOSNIFF", default=True)
 SECURE_SSL_REDIRECT = env("SECURE_SSL_REDIRECT", default=False)
 USE_X_FORWARDED_HOST = env("USE_X_FORWARDED_HOST", default=True)
@@ -66,9 +64,7 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    "django_otp",
-    "django_otp.plugins.otp_totp",
-    "django_otp.plugins.otp_static",
+    "allauth.mfa",
     "constance",
     "constance.backends.database",
     "corsheaders",
@@ -330,9 +326,7 @@ STORAGES = {
             #   * https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
             #   * https://github.com/jschneier/django-storages/blob/master/storages/backends/s3boto3.py
             #
-            "endpoint_url": AWS_S3_ENDPOINT_URL.geturl()
-            if AWS_S3_ENDPOINT_URL
-            else None,
+            "endpoint_url": AWS_S3_ENDPOINT_URL.geturl() if AWS_S3_ENDPOINT_URL else None,
             "custom_domain": env("AWS_S3_CUSTOM_DOMAIN", default=None),
             "url_protocol": env(
                 "AWS_S3_SECURE_URLS",
@@ -366,9 +360,7 @@ AUTHENTICATION_BACKENDS = [
 
 # Email
 # https://docs.djangoproject.com/en/5.1/topics/email/
-EMAIL_SUBJECT_PREFIX = env(
-    "EMAIL_SUBJECT_PREFIX", default="[{{ cookiecutter.project_name }}] "
-)
+EMAIL_SUBJECT_PREFIX = env("EMAIL_SUBJECT_PREFIX", default="[{{ cookiecutter.project_name }}] ")
 DEFAULT_FROM_EMAIL = env(
     "DEFAULT_FROM_EMAIL",
     default="{{ cookiecutter.project_name }} <{{ cookiecutter.author_email }}>",
@@ -387,9 +379,7 @@ ADMINS = env.list(
 MANAGERS = env.list(
     "MANAGERS",
     cast=parseaddr,
-    default=[
-        ("{{ cookiecutter.project_name }} Managers", "{{ cookiecutter.author_email }}")
-    ],
+    default=[("{{ cookiecutter.project_name }} Managers", "{{ cookiecutter.author_email }}")],
 )
 
 # Parse the configured EMAIL_URL into proper Django settings.
@@ -408,9 +398,7 @@ CELERY_TASK_TRACK_STARTED = env("CELERY_TASK_TRACK_STARTED", default=True)
 CELERY_DISABLE_RATE_LIMITS = env("CELERY_DISABLE_RATE_LIMITS", default=True)
 CELERY_WORKER_CONCURRENCY = env("CELERY_WORKER_CONCURRENCY", default=12)
 CELERY_WORKER_MAX_TASKS_PER_CHILD = env("CELERY_WORKER_MAX_TASKS_PER_CHILD", default=12)
-CELERY_WORKER_MAX_MEMORY_PER_CHILD = env(
-    "CELERY_WORKER_MAX_MEMORY_PER_CHILD", default=(128 * 1024)
-)
+CELERY_WORKER_MAX_MEMORY_PER_CHILD = env("CELERY_WORKER_MAX_MEMORY_PER_CHILD", default=(128 * 1024))
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
 # Allow the debug toolbar to be toggled with an environment variable.
@@ -453,7 +441,23 @@ ACCOUNT_RATE_LIMITS = {
 OTP_ADMIN_HIDE_SENSITIVE_DATA = True
 
 # Require 2FA for all staff (and superuser) accounts.
-ACCOUNTS_STAFF_REQUIRE_2FA = env("ACCOUNTS_STAFF_REQUIRE_2FA", default=True)
+MFA_ENABLED = env("MFA_ENABLED", default=True)
+MFA_REQUIRE_FOR_STAFF = env("MFA_REQUIRE_FOR_STAFF", default=not DEBUG)
+MFA_SUPPORTED_TYPES = env.list(
+    "MFA_SUPPORTED_TYPES",
+    default=["totp", "recovery_codes", "webauthn"],
+)
+MFA_PASSKEY_LOGIN_ENABLED = env(
+    "MFA_PASSKEY_LOGIN_ENABLED",
+    default="webauthn" in MFA_SUPPORTED_TYPES,
+)
+MFA_WEBAUTHN_ALLOW_INSECURE_ORIGIN = env(
+    "MFA_WEBAUTHN_ALLOW_INSECURE_ORIGIN",
+    default=DEBUG,
+)
+MFA_FORMS = {
+    "activate_totp": "{{ cookiecutter.package_name }}.accounts.forms.ActivateTOTPForm",
+}
 
 # ReCAPTCHA
 # https://github.com/torchbox/django-recaptcha
