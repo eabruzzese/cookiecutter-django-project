@@ -1,19 +1,14 @@
 {
+  "python.analysis.autoImportCompletions": true,
+  "[python]": {
     "editor.formatOnSave": true,
-    "python.linting.mypyEnabled": true,
-    "python.linting.mypyArgs": [
-      "--config-file=pyproject.toml",
-    ],
-    "python.linting.pydocstyleEnabled": true,
-    "python.analysis.autoImportCompletions": true,
-    "python.formatting.provider": "black",
-    "[python]": {
-        "editor.codeActionsOnSave": {
-            "source.organizeImports": true,
-            "source.fixAll": true,
-        },
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
     },
-    "[dockerfile]": {
-      "editor.formatOnSave": false,
-    }
+    "editor.defaultFormatter": "charliermarsh.ruff",
+  },
+  "[dockerfile]": {
+    "editor.formatOnSave": false,
+  }
 }

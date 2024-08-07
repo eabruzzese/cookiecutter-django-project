@@ -28,38 +28,13 @@ repos:
           poetry.lock
         )$
 
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.3.0
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.5.6
     hooks:
-    - id: pyupgrade
-      args: [--py311-plus]
-
-  - repo: https://github.com/pycqa/pydocstyle
-    rev: 6.1.1
-    hooks:
-      - id: pydocstyle
-        exclude: |
-          (?x)(
-            migrations/.*
-          )$
-        additional_dependencies: [toml]
-
-  - repo: https://github.com/PyCQA/autoflake
-    rev: v2.0.0
-    hooks:
-      - id: autoflake
-        args: ["--remove-all-unused-imports", "--in-place", "--recursive"]
-
-  - repo: https://github.com/pycqa/isort
-    rev: 5.10.1
-    hooks:
-      - id: isort
-        name: isort (python)
-
-  - repo: https://github.com/psf/black
-    rev: 22.10.0
-    hooks:
-      - id: black
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
 
   - repo: https://github.com/rtts/djhtml
     rev: v1.5.2
@@ -107,8 +82,3 @@ repos:
             && exec poetry run mypy $@
           "
         args: ["--install-types"]
-
-  - repo: https://github.com/flakeheaven/flakeheaven
-    rev: 3.2.1
-    hooks:
-      - id: flakeheaven

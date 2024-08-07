@@ -43,7 +43,9 @@ SECURE_HSTS_SECONDS = env("SECURE_HSTS_SECONDS", default=0)
 SECURE_HSTS_INCLUDE_SUBDOMAINS = env("SECURE_HSTS_INCLUDE_SUBDOMAINS", default=False)
 SECURE_HSTS_PRELOAD = env("SECURE_HSTS_PRELOAD", default=False)
 SECURE_REFERRER_POLICY = env("SECURE_REFERRER_POLICY", default="no-referrer")
-SECURE_CROSS_ORIGIN_OPENER_POLICY = env("SECURE_CROSS_ORIGIN_OPENER_POLICY", default="same-origin")
+SECURE_CROSS_ORIGIN_OPENER_POLICY = env(
+    "SECURE_CROSS_ORIGIN_OPENER_POLICY", default="same-origin"
+)
 SECURE_CONTENT_TYPE_NOSNIFF = env("SECURE_CONTENT_TYPE_NOSNIFF", default=True)
 SECURE_SSL_REDIRECT = env("SECURE_SSL_REDIRECT", default=False)
 USE_X_FORWARDED_HOST = env("USE_X_FORWARDED_HOST", default=True)
@@ -314,16 +316,30 @@ AUTHENTICATION_BACKENDS = [
 
 # Email
 # https://docs.djangoproject.com/en/4.1/topics/email/
-EMAIL_SUBJECT_PREFIX = env("EMAIL_SUBJECT_PREFIX", default="[{{ cookiecutter.project_name }}] ")
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="{{ cookiecutter.project_name }} <{{ cookiecutter.author_email }}>")
+EMAIL_SUBJECT_PREFIX = env(
+    "EMAIL_SUBJECT_PREFIX", default="[{{ cookiecutter.project_name }}] "
+)
+DEFAULT_FROM_EMAIL = env(
+    "DEFAULT_FROM_EMAIL",
+    default="{{ cookiecutter.project_name }} <{{ cookiecutter.author_email }}>",
+)
 SERVER_EMAIL = env("SERVER_EMAIL", default=DEFAULT_FROM_EMAIL)
 ADMINS = env.list(
     "ADMINS",
     cast=parseaddr,
-    default=[("{{ cookiecutter.project_name }} Administrators", "{{ cookiecutter.author_email }}")],
+    default=[
+        (
+            "{{ cookiecutter.project_name }} Administrators",
+            "{{ cookiecutter.author_email }}",
+        )
+    ],
 )
 MANAGERS = env.list(
-    "MANAGERS", cast=parseaddr, default=[("{{ cookiecutter.project_name }} Managers", "{{ cookiecutter.author_email }}")]
+    "MANAGERS",
+    cast=parseaddr,
+    default=[
+        ("{{ cookiecutter.project_name }} Managers", "{{ cookiecutter.author_email }}")
+    ],
 )
 
 # Parse the configured EMAIL_URL into proper Django settings.
@@ -342,7 +358,9 @@ CELERY_TASK_TRACK_STARTED = env("CELERY_TASK_TRACK_STARTED", default=True)
 CELERY_DISABLE_RATE_LIMITS = env("CELERY_DISABLE_RATE_LIMITS", default=True)
 CELERY_WORKER_CONCURRENCY = env("CELERY_WORKER_CONCURRENCY", default=12)
 CELERY_WORKER_MAX_TASKS_PER_CHILD = env("CELERY_WORKER_MAX_TASKS_PER_CHILD", default=12)
-CELERY_WORKER_MAX_MEMORY_PER_CHILD = env("CELERY_WORKER_MAX_MEMORY_PER_CHILD", default=(128 * 1024))
+CELERY_WORKER_MAX_MEMORY_PER_CHILD = env(
+    "CELERY_WORKER_MAX_MEMORY_PER_CHILD", default=(128 * 1024)
+)
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
 # Allow the debug toolbar to be toggled with an environment variable.
