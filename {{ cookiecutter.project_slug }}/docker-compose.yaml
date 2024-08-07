@@ -1,5 +1,3 @@
-version: '3.8'
-
 volumes:
   postgres:
   mailhog:
@@ -132,7 +130,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.25'
+          cpus: "0.25"
           memory: 1G
     command: watchmedo auto-restart --directory=./ --pattern=*.py --recursive -- celery --app={{ cookiecutter.package_name }} worker --uid=nobody --gid=nogroup --loglevel=INFO --task-events --without-gossip --without-heartbeat --without-mingle
     depends_on:
@@ -166,7 +164,7 @@ services:
   #
   postgres:
     <<: *defaults
-    image: postgres:14
+    image: postgres:latest
     environment:
       PGUSER: postgres
       POSTGRES_PASSWORD: development-only
@@ -216,7 +214,7 @@ services:
   #
   redis:
     <<: *defaults
-    image: redis:5
+    image: redis:latest
     healthcheck:
       test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
       interval: 1s
@@ -237,9 +235,9 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
+          cpus: "1.0"
           memory: 512M
-    image: rabbitmq:3.9
+    image: rabbitmq:latest
     # RabbitMQ relies on the hostname to track its data.
     hostname: rabbitmq
     user: rabbitmq
@@ -258,7 +256,7 @@ services:
   #
   flower:
     <<: *defaults
-    image: mher/flower
+    image: mher/flower:latest
     command: celery --broker=amqp://guest:guest@rabbitmq flower --port=8888
     depends_on:
       rabbitmq:
@@ -322,7 +320,7 @@ services:
       MINIO_ROOT_USER: development-only
       MINIO_ROOT_PASSWORD: development-only
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: ["CMD", "mc", "ready", "local"]
       interval: 1s
       timeout: 5s
       retries: 30
@@ -342,6 +340,6 @@ services:
       sh -c "
       mc config host add minio http://minio:9000 development-only development-only;
       mc mb --ignore-existing minio/{{ cookiecutter.project_slug }};
-      mc policy set download minio/{{ cookiecutter.project_slug }};
+      mc anonymous set download minio/{{ cookiecutter.project_slug }};
       "
     restart: on-failure:3
