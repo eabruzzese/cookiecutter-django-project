@@ -388,6 +388,7 @@ vars().update(env.email_url("EMAIL_URL"))
 # Celery
 # https://docs.celeryq.dev/en/stable/userguide/configuration.html
 CELERY_BROKER_URL = env.url("CELERY_BROKER_URL").geturl()
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_RESULT_BACKEND = "django-db"
 CELERY_RESULT_EXTENDED = True
