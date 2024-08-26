@@ -1,6 +1,6 @@
 volumes:
   postgres:
-  mailhog:
+  mailpit:
   minio:
   redis:
 
@@ -28,7 +28,7 @@ x-{{ cookiecutter.project_slug }}: &{{ cookiecutter.project_slug }}
   environment:
     DATABASE_URL: postgres://postgres:development-only@postgres/postgres
     CACHE_URL: redis://redis:6379/0
-    EMAIL_URL: smtp://mailhog:1025
+    EMAIL_URL: smtp://mailpit:1025
     CELERY_BROKER_URL: redis://redis:6379/1
   env_file: .env
   volumes:
@@ -111,7 +111,7 @@ services:
         condition: service_completed_successfully
       redis:
         condition: service_healthy
-      mailhog:
+      mailpit:
         condition: service_started
       minio:
         condition: service_started
@@ -194,12 +194,12 @@ services:
       exec /entrypoint.sh
       "
     depends_on:
-      mailhog:
+      mailpit:
         condition: service_started
     environment:
       PGADMIN_DEFAULT_EMAIL: {{ cookiecutter.author_email }}
       PGADMIN_DEFAULT_PASSWORD: development-only
-      PGADMIN_CONFIG_MAIL_SERVER: "'mailhog'"
+      PGADMIN_CONFIG_MAIL_SERVER: "'mailpit'"
       PGADMIN_CONFIG_MAIL_PORT: 1025
       PGADMIN_SERVER_JSON_FILE: /var/lib/pgadmin/servers.json
     ports:
@@ -256,24 +256,25 @@ services:
       - 127.0.0.1:8063:8081
 
   ##
-  # mailhog
+  # mailpit
   #
-  # A MailHog container to act as a fake SMTP server for intercepting emails in
+  # A MailPit container to act as a fake SMTP server for intercepting emails in
   # development.
   #
   # Accessible on port 8025
   #
-  mailhog:
+  mailpit:
     <<: *defaults
-    image: mailhog/mailhog:latest
-    user: root
-    environment:
-      MH_STORAGE: maildir
-      MH_MAILDIR_PATH: /mail
+    image: axllent/mailpit:latest
+    volumes:
+      - mailpit:/data
     ports:
       - 127.0.0.1:8025:8025
-    volumes:
-      - mailhog:/mail
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
   ##
   # minio

@@ -39,7 +39,7 @@ main () {
         -----
 
         * Redis-Commander ......... http://localhost:8063
-        * MailHog ................. http://localhost:8025
+        * MailPit ................. http://localhost:8025
         * pgadmin4 ................ http://localhost:8054
             Email: {{ cookiecutter.author_email }}
             Password: development-only
