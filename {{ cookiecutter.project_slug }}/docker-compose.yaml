@@ -246,7 +246,7 @@ services:
   #
   redis-commander:
     <<: *defaults
-    image: rediscommander/redis-commander:latest
+    image: ghcr.io/joeferner/redis-commander:latest
     depends_on:
       redis:
         condition: service_healthy
