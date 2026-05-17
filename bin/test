@@ -17,15 +17,12 @@ main () {
 
         project_dir="$(mktemp -d)"
 
-        pipx run cookiecutter . \
+        uvx cookiecutter . \
             --output-dir="$project_dir" \
             --no-input \
             --keep-project-on-failure
 
         cd "$project_dir/project-name"
-        git init .
-        git add --all
-        git commit -m "Initial boilerplate"
         bin/setup
         echo "Waiting for project to become healthy..."
         curl --retry 10 --fail --retry-all-errors --retry-delay 5 --silent --output /dev/null "http://localhost:8000/healthcheck"
