@@ -27,9 +27,11 @@ main () {
         git add --all
         git commit -m "Initial boilerplate"
         bin/setup
+        echo "Waiting for project to become healthy..."
         curl --retry 10 --fail --retry-all-errors --retry-delay 5 --silent --output /dev/null "http://localhost:8000/healthcheck"
+        echo "Project is healthy!"
         BUILDKIT_PROGRESS=plain COMPOSE_ANSI=never docker compose down --volumes
-        poetry run pre-commit run --all-files || true
+        uv run prek run --all-files || true
         git status --porcelain
     )
 }

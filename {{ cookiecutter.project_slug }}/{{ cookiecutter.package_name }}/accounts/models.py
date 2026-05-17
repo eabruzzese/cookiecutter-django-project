@@ -16,7 +16,7 @@ class User(AbstractUser):
     time_zone = TimeZoneField(default="America/New_York")
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ("username",)
+    REQUIRED_FIELDS = ["username"]  # noqa: RUF012
 
     @property
     def require_2fa(self) -> bool:

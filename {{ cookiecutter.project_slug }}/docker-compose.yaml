@@ -1,7 +1,7 @@
 volumes:
   postgres:
   mailpit:
-  minio:
+  rustfs:
   redis:
 
 ##
@@ -21,7 +21,7 @@ x-defaults: &defaults
 #
 x-{{ cookiecutter.project_slug }}: &{{ cookiecutter.project_slug }}
   <<: *defaults
-  image: gcr.io/{{ cookiecutter.github_repository }}:${IMAGE_TAG:-dev}
+  image: ghcr.io/{{ cookiecutter.github_repository }}:${IMAGE_TAG:-dev}
   build:
     context: .
     target: ${BUILD_TARGET:-dev}
@@ -42,7 +42,13 @@ services:
   #
   migrations:
     <<: *{{ cookiecutter.project_slug }}
-    command: ./manage.py migrate
+    command: |
+      sh -c "
+        ./manage.py migrate_schemas --shared
+        ./manage.py create_tenant --domain-domain=localhost --schema_name=public --name=public --no-input
+        ./manage.py create_tenant --domain-domain=tenant1.localhost --schema_name=tenant1 --name=tenant1 --no-input
+        ./manage.py migrate_schemas
+      "
     depends_on:
       postgres:
         condition: service_healthy
@@ -57,8 +63,8 @@ services:
     <<: *{{ cookiecutter.project_slug }}
     command: |
       sh -c "
-        ./manage.py createsuperuser --no-input
-        ./manage.py set_fake_passwords --password=development-only
+        ./manage.py all_tenants_command createsuperuser --no-input
+        ./manage.py all_tenants_command set_fake_passwords --password=development-only
       "
     depends_on:
       migrations:
@@ -113,7 +119,7 @@ services:
         condition: service_healthy
       mailpit:
         condition: service_started
-      minio:
+      rustfs:
         condition: service_started
     ports:
       - 127.0.0.1:8000:8000
@@ -277,43 +283,48 @@ services:
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
   ##
-  # minio
+  # rustfs
   #
-  # A minio container to act as a mock S3 provider in local development.
+  # A rustfs container to act as a mock S3 provider in local development.
   #
-  minio:
-    <<: *defaults
-    image: minio/minio:latest
-    command: server /data --console-address ":9001"
+  rustfs:
+    image: rustfs/rustfs:latest
+    restart: unless-stopped
     volumes:
-      - minio:/data
+      - rustfs:/data
     ports:
       - 127.0.0.1:9000:9000
       - 127.0.0.1:9001:9001
     environment:
-      MINIO_ROOT_USER: development-only
-      MINIO_ROOT_PASSWORD: development-only
+      RUSTFS_ADDRESS: 0.0.0.0:9000
+      RUSTFS_CONSOLE_ADDRESS: 0.0.0.0:9001
+      RUSTFS_CONSOLE_ENABLE: true
+      RUSTFS_EXTERNAL_ADDRESS: :9000
+      RUSTFS_CORS_ALLOWED_ORIGINS: "*"
+      RUSTFS_CONSOLE_CORS_ALLOWED_ORIGINS: "*"
+      RUSTFS_ACCESS_KEY: development-only
+      RUSTFS_SECRET_KEY: development-only
+      RUSTFS_OBS_LOG_STDOUT_ENABLED: true
+      RUSTFS_OBS_LOG_STDOUT_LEVEL: info
     healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
-      interval: 1s
-      timeout: 5s
-      retries: 30
+      test:
+        [
+          "CMD-SHELL",
+          "curl -f http://localhost:9000/health && curl -f http://localhost:9001/rustfs/console/health"
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
-  ##
-  # create-buckets
-  #
-  # Creates mock S3 buckets in the minio service.
-  #
-  create-buckets:
-    <<: *defaults
+  rustfs-create-buckets:
     image: minio/mc:latest
     depends_on:
-      minio:
+      rustfs:
         condition: service_healthy
     entrypoint: >
       sh -c "
-      mc config host add minio http://minio:9000 development-only development-only;
-      mc mb --ignore-existing minio/{{ cookiecutter.project_slug }};
-      mc anonymous set download minio/{{ cookiecutter.project_slug }};
+      mc alias set rustfs http://rustfs:9000 development-only development-only;
+      mc mb --ignore-existing rustfs/{{ cookiecutter.project_slug }};
       "
     restart: on-failure:3

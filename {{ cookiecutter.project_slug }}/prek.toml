@@ -1,0 +1,92 @@
+# Configuration file for `prek`, a git hook framework written in Rust.
+# See https://prek.j178.dev for more information.
+# :schema https://www.schemastore.org/prek.json
+
+default_language_version = {python = "python3.13"}
+
+[[repos]]
+repo = "https://github.com/pre-commit/pre-commit-hooks"
+rev = "v6.0.0"
+hooks = [
+  {id = "mixed-line-ending", args = ["--fix=lf"], exclude_types = ["batch"]},
+  {id = "trailing-whitespace", args = ["--markdown-linebreak-ext=md"], exclude_types = ["svg"]},
+  {id = "end-of-file-fixer", exclude_types = ["svg"]},
+  {id = "fix-byte-order-marker"}
+]
+
+[[repos]]
+repo = "https://github.com/adamchainz/django-upgrade"
+rev = "1.30.0"
+hooks = [
+  {id = "django-upgrade"}
+]
+
+[[repos]]
+repo = "https://github.com/pappasam/toml-sort"
+rev = "v0.24.4"
+hooks = [
+  {
+    id = "toml-sort",
+    args = ["--all", "--in-place"],
+    exclude = """\
+      (?x)^(
+        uv.lock|
+        prek.toml
+      )$\
+    """
+  }
+]
+
+[[repos]]
+repo = "https://github.com/astral-sh/ruff-pre-commit"
+rev = "v0.15.13"
+hooks = [
+  {id = "ruff", args = ["--fix"]},
+  {id = "ruff-format"}
+]
+
+[[repos]]
+repo = "https://github.com/rtts/djhtml"
+rev = "3.0.11"
+hooks = [
+  {id = "djhtml", args = ["--tabwidth=2"], files = '.*/templates/.*\.html$'}
+]
+
+[[repos]]
+repo = "https://github.com/shellcheck-py/shellcheck-py"
+rev = "v0.11.0.1"
+hooks = [
+  {
+    id = "shellcheck",
+    args = [
+      "--external-sources",
+      "--exclude=SC1091"
+    ]
+  }
+]
+
+[[repos]]
+repo = "https://github.com/pre-commit/pre-commit-hooks"
+rev = "v6.0.0"
+hooks = [
+  {args = ["--django"], exclude = "tests/(factories|fixtures)", id = "name-tests-test"},
+  {exclude = ".vscode/settings.json", id = "check-json"},
+  {id = "check-added-large-files"},
+  {id = "check-ast"},
+  {id = "check-builtin-literals"},
+  {id = "check-case-conflict"},
+  {id = "check-docstring-first"},
+  {id = "check-executables-have-shebangs"},
+  {id = "check-merge-conflict"},
+  {id = "check-toml"},
+  {id = "check-yaml"},
+  {id = "debug-statements"},
+  {id = "detect-private-key"}
+]
+
+[[repos]]
+repo = "https://github.com/RobertCraigie/pyright-python"
+rev = "v1.1.407"
+hooks = [
+  {entry = "uv run pyright --project=pyproject.toml", id = "pyright"}
+]

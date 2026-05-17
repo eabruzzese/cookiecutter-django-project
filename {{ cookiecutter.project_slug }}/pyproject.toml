@@ -1,109 +1,87 @@
 [build-system]
-build-backend = "poetry.core.masonry.api"
-requires = ["poetry-core"]
+build-backend = "uv_build"
+requires = ["uv_build>=0.8.11,<0.9.0"]
 
-[tool.poetry]
-authors = ["{{ cookiecutter.author_name }} <{{ cookiecutter.author_email }}>"]
-description = "{{ cookiecutter.project_description }}"
-license = "MIT"
-name = "{{ cookiecutter.package_name }}"
-readme = "README.md"
-version = "0.1.0"
-
-[tool.poetry.dependencies]
-celery = {extras = ["redis"], version = "^5.4.0"}
-django = "^5.1"
-django-allauth = {extras = ["mfa"], version = "^64.0.0"}
-# Pin celery beat to a commit in master until a new release is cut for Django 5.1 support.
-django-celery-beat = {git = "https://github.com/celery/django-celery-beat.git", rev = "fcc4ba7"}
-django-celery-results = "^2.5.1"
-django-constance = {extras = ["database"], version = "^3.1.0"}
-django-cors-headers = "^4.4.0"
-django-debug-toolbar = "^4.4.6"
-django-environ = "^0.10.0"
-django-extensions = "^3.2.3"
-django-health-check = "^3.18.3"
-django-htmx = "^1.19.0"
-django-otp = "^1.5.1"
-django-recaptcha = "^4.0.0"
-django-redis = "^5.4.0"
-# Pinned to 1.14.3: https://github.com/jschneier/django-storages/issues/1430
-django-storages = {extras = ["boto3"], version = "1.14.3"}
-django-timezone-field = "^7.0"
-django-waffle = "^4.1.0"
-ipython = "^8.26.0"
-psutil = "^6.0.0"
-psycopg2 = "^2.9.9"
-python = "^3.12"
-tzdata = "^2024.1"
-uvicorn = {extras = ["standard"], version = "^0.21.1"}
-whitenoise = {extras = ["brotli"], version = "^6.7.0"}
-
-[tool.poetry.group.dev.dependencies]
-celery-stubs = "^0.1.3"
-django-stubs = "^5.0.4"
-djhtml = "^3.0.6"
-mypy = "^1.11.1"
-mypy-extensions = "^1.0.0"
-pre-commit = "^3.8.0"
-pytest = "^8.3.2"
-pytest-django = "^4.8.0"
-pytest-mock = "^3.14.0"
-toml-sort = "^0.23.0"
-watchdog = "^4.0.1"
-werkzeug = "^3.0.3"
-
-[tool.django-stubs]
-django_settings_module = "{{ cookiecutter.package_name }}.settings"
-
-[tool.mypy]
-check_untyped_defs = true
-color_output = true
-disallow_incomplete_defs = true
-disallow_untyped_calls = true
-disallow_untyped_decorators = false
-disallow_untyped_defs = true
-error_summary = true
-follow_imports = "skip"
-follow_imports_for_stubs = true
-ignore_missing_imports = true
-no_implicit_optional = true
-plugins = [
-  "mypy_django_plugin.main"
+[dependency-groups]
+dev = [
+  "basedpyright>=1.39.4",
+  "celery-stubs>=0.1.3",
+  "django-types>=0.24.0",
+  "django-upgrade>=1.30.0",
+  "djhtml>=3.0.11",
+  "prek>=0.4.0",
+  "pytest-django>=4.12.0",
+  "pytest-mock>=3.15.1",
+  "pytest>=9.0.3",
+  "toml-sort>=0.24.4",
+  "watchdog>=6.0.0",
+  "werkzeug>=3.1.8"
 ]
-pretty = true
-show_error_context = true
-strict_equality = true
-strict_optional = true
-warn_no_return = true
-warn_redundant_casts = true
-warn_return_any = false
-warn_unreachable = true
-warn_unused_ignores = true
+
+[project]
+authors = [{email = "{{ cookiecutter.author_email }}", name = "{{ cookiecutter.author_name }}"}]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15"
+]
+dependencies = [
+  "celery[redis]>=5.6.3",
+  "django-allauth[mfa]>=65.16.1",
+  "django-celery-beat>=2.9.0",
+  "django-celery-results>=2.6.0",
+  "django-constance>=4.3.5",
+  "django-cors-headers>=4.9.0",
+  "django-debug-toolbar>=6.3.0",
+  "django-extensions>=4.1",
+  "django-health-check>=4.4.1",
+  "django-htmx>=1.27.0",
+  "django-otp>=1.7.0",
+  "django-recaptcha>=4.1.0",
+  "django-redis>=6.0.0",
+  "django-storages[boto3]>=1.14.6",
+  "django-stubs-ext>=6.0.4",
+  "django-tenants>=3.10.1",
+  "django-timezone-field>=7.2.1",
+  "django-waffle>=5.0.0",
+  "django>=6.0.5",
+  "environs[django]>=15.0.1",
+  "ipython>=9.13.0",
+  "psutil>=7.2.2",
+  "psycopg[binary]>=3.3.4",
+  "tenant-schemas-celery>=4.0.3",
+  "tzdata>=2026.2",
+  "uvicorn[standard]>=0.47.0",
+  "whitenoise[brotli]>=6.12.0"
+]
+description = "{{ cookiecutter.project_description }}"
+license = "{{ cookiecutter.project_license }}"
+name = "{{ cookiecutter.package_name }}"
+requires-python = ">=3.13,<4"
+version = "0.1.0"
+readme = "README.md"
+
+[tool.uv]
+default-groups = "all"
+
+[tool.uv.build-backend]
+module-root = ""
+
+[tool.pyright]
+exclude = ["**/__pycache__", ".venv/**"]
+typeCheckingMode = "standard"
 
 [tool.pytest]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "{{ cookiecutter.package_name }}.settings"
-addopts = "--durations=10"
+addopts = "--verbose"
+asyncio_mode = "auto"
 markers = [
-  'api: mark a test as being an API test',
-  'integration: mark a test as being an integration test with external dependencies'
+  "integration: Integration tests"
 ]
-norecursedirs = [
-  ".git",
-  ".mypy_cache",
-  ".pytest_cache",
-  "__pycache__",
-  "node_modules",
-  "static",
-  "static-files"
-]
-python_files = [
-  "*_tests.py",
-  "test_*.py",
-  "tests.py"
-]
+testpaths = ["test"]
 
 # See:
 # - https://docs.astral.sh/ruff/configuration/
@@ -113,16 +91,57 @@ python_files = [
 line-length = 100
 
 [tool.ruff.lint]
-ignore = []
-select = ["E4", "E7", "E9", "F", "I", "UP"]
+select = [
+  "ANN", # flake8-annotations
+  "ASYNC", # flake8-async
+  "B", # flake8-bugbear
+  "C4", # flake8-comprehensions
+  "E4", # pycodestyle-4xx
+  "E7", # pycodestyle-7xx
+  "E9", # pycodestyle-9xx
+  "ERA", # eradicate
+  "F", # pyflakes
+  "FURB", # refurb
+  "I", # isort
+  "N", # pep8-naming
+  "NPY", # numpy
+  "PERF", # perflint
+  "PTH", # flake8-use-pathlib
+  "RUF", # ruff
+  "S", # flake8-bandit
+  "SIM", # flake8-simplify
+  "TC", # flake8-type-checking
+  "UP" # pyupgrade
+]
+
+[tool.ruff.lint.flake8-annotations]
+allow-star-arg-any = true # allow typing *args and *kwargs with Any
+
+[tool.ruff.lint.pep8-naming]
+classmethod-decorators = [
+  # Allow the @classproperty decorator to be recognized as a class method.
+  "classproperty",
+  # Allow Pydantic's `@validator` decorator to be recognized as a class method.
+  "pydantic.validator"
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/migrations/**.py" = ["RUF012"]
 
 [tool.tomlsort]
 all = true
 in_place = true
 sort_first = [
   "build-system",
+  "dependency-groups",
   "project",
-  "tool.poetry",
-  "tool.poetry.dependencies",
-  "tool.poetry.group.dev.dependencies"
+  "project.authors",
+  "project.classifiers",
+  "project.dependencies",
+  "project.description",
+  "project.license",
+  "project.name",
+  "project.requires-python",
+  "project.version",
+  "tool.uv"
 ]

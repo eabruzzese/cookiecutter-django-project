@@ -43,7 +43,7 @@ main () {
         * pgadmin4 ................ http://localhost:8054
             Email: {{ cookiecutter.author_email }}
             Password: development-only
-        * Minio (mock S3) ......... http://localhost:9001
+        * RustFS (mock S3) ......... http://localhost:9001
             Access key: development-only
             Secret key: development-only
         * Flower .................. http://localhost:8888
